@@ -1,2 +1,0 @@
-# Codelagos
-CodeLagos training Projects
