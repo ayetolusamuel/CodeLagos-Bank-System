@@ -5,10 +5,17 @@
  */
 package codelagos.bank.system2;
 
+import javax.swing.JInternalFrame;
+
 /**
  *
  * @author DELL
  */
-public class CheckBalance {
+public class CheckBalance extends JInternalFrame{
+    
+    
+    private void checkBalance(){
+        
+    }
     
 }

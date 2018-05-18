@@ -67,11 +67,11 @@ public class OpenAccount extends JFrame implements ActionListener{
                                 @Override
 				public void windowClosing(WindowEvent e)
 				{       
-//                                    CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
-//                                    bankSystem2.setLocation(300, 100);
-//                                    bankSystem2.setResizable(false);
-//                                    bankSystem2.setSize(550, 430); 
-//                                    bankSystem2.setVisible(true);
+                                    CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
+                                    bankSystem2.setLocation(300, 100);
+                                    bankSystem2.setResizable(false);
+                                    bankSystem2.setSize(550, 430); 
+                                    bankSystem2.setVisible(true);
 				}
 			});
 		

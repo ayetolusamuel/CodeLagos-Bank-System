@@ -52,24 +52,25 @@ public class DepositCash extends JFrame implements ActionListener{
     public DepositCash() throws HeadlessException {
         databaseConnection.open();
         displayGUI();
-//        addWindowListener(new WindowAdapter()
-//			{
-//                                @Override
-//				public void windowClosing(WindowEvent e)
-//				{       
-//                                    CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
-//                                    bankSystem2.setLocation(300, 100);
-//                                    bankSystem2.setResizable(false);
-//                                    bankSystem2.setSize(550, 430); 
-//                                    bankSystem2.setVisible(true);
-//				}
-//			});
-//		
-//        
+        addWindowListener(new WindowAdapter()
+			{
+                                @Override
+				public void windowClosing(WindowEvent e)
+				{       
+                                    CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
+                                    bankSystem2.setLocation(300, 100);
+                                    bankSystem2.setResizable(false);
+                                    bankSystem2.setSize(550, 430); 
+                                    bankSystem2.setVisible(true);
+				}
+			});
+		
+        
     }
     
     private void displayGUI(){
         setResizable(false);
+        setTitle("Deposit Cash!!!!!!!!!!!");
          jPanel = new JPanel(){
                 @Override
              public void paintComponent(Graphics g)
@@ -402,7 +403,9 @@ public class DepositCash extends JFrame implements ActionListener{
 		
 	ps.executeUpdate();
         
-	JOptionPane.showMessageDialog(null, "Update Finished!");
+	JOptionPane.showMessageDialog(null, "Account Updated Successfully!!!!");
+        btnSave.setEnabled(false);
+        txtAmountDeposited.setEditable(false);
          }
          catch(Exception ex){
              ex.printStackTrace();
@@ -471,7 +474,7 @@ public class DepositCash extends JFrame implements ActionListener{
             
                
         }catch(Exception ex){
-            ex.printStackTrace();
+           // ex.printStackTrace();
         }
             
         }
