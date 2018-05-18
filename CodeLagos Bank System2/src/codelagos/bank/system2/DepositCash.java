@@ -40,6 +40,7 @@ public class DepositCash extends JFrame implements ActionListener{
        private  JTextField txtPhoneNumber,txtFullName, txtPreviousAmount,txtAmountDeposited,txtBalance;
        private JButton btnCheck,btnSave;
        DatabaseConnection databaseConnection = new DatabaseConnection();
+    private double result;
     public DepositCash() throws HeadlessException {
         databaseConnection.open();
         displayGUI();
@@ -261,7 +262,7 @@ public class DepositCash extends JFrame implements ActionListener{
      }
      
      private double returnBalanceFromDatabase(String pNumber ){
-           double result = 0;
+           
          try{
          String query = "SELECT * FROM amountdeposited where pnumber like '"+pNumber+"'";
                 ResultSet resultSet;
@@ -274,7 +275,9 @@ public class DepositCash extends JFrame implements ActionListener{
 
                 } else {
                    String balance = resultSet.getString("balance").trim();
-                    System.out.println("Balnce "+balance);
+                    
+                   result = Double.parseDouble(balance);
+                   System.out.println("Balnce "+balance);
 
                     
 
@@ -308,13 +311,14 @@ public class DepositCash extends JFrame implements ActionListener{
             String number,result;
             number = txtPhoneNumber.getText();
             result = fetchDataBaseOnPhoneNumber(number);
-            if (result == null) {
-                //txtFullName.setText(result);
+            if (result != null) {
+                txtFullName.setText(result);
                 //returnUserAmountBasedOnPhone(number);
                 
                 
                 setVisible();
             }
+          
                 
             }
         catch(Exception ex){
@@ -328,9 +332,11 @@ public class DepositCash extends JFrame implements ActionListener{
            String pAmount = txtPreviousAmount.getText();
            String aDeposited = txtAmountDeposited.getText();
             try{
+                
              double returnBalance = returnBalanceFromDatabase(pNumber);
-            
+                System.out.println("returnbalance "+returnBalance);
             if ( returnBalance != 0) {
+                txtPreviousAmount.setText(Double.toString(returnBalance));
                 double balance = returnBalanceFromDatabase(pNumber);
                 double  totalBalance = balanceCompute(balance, Double.parseDouble(amountDeposited));
                 txtBalance.setText(Double.toString(totalBalance));
