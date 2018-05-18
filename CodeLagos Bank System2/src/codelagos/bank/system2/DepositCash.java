@@ -17,6 +17,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,13 +44,31 @@ public class DepositCash extends JFrame implements ActionListener{
        private JButton btnCheck,btnSave;
        DatabaseConnection databaseConnection = new DatabaseConnection();
     private double result;
+    private String preAmount;
+    
+    private String amtDeposited;
+    private String customerBalance;
     public DepositCash() throws HeadlessException {
         databaseConnection.open();
         displayGUI();
-        
+//        addWindowListener(new WindowAdapter()
+//			{
+//                                @Override
+//				public void windowClosing(WindowEvent e)
+//				{       
+//                                    CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
+//                                    bankSystem2.setLocation(300, 100);
+//                                    bankSystem2.setResizable(false);
+//                                    bankSystem2.setSize(550, 430); 
+//                                    bankSystem2.setVisible(true);
+//				}
+//			});
+//		
+//        
     }
     
     private void displayGUI(){
+        setResizable(false);
          jPanel = new JPanel(){
                 @Override
              public void paintComponent(Graphics g)
@@ -78,6 +99,7 @@ public class DepositCash extends JFrame implements ActionListener{
         lblPhoneNumber.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         
         txtPhoneNumber = new JTextField();
+        txtPhoneNumber.setText("08167137007");
          txtPhoneNumber.addKeyListener(new KeyAdapter () {
                                 @Override
 				public void keyTyped (KeyEvent ke) {
@@ -213,7 +235,7 @@ public class DepositCash extends JFrame implements ActionListener{
          txtFullName.setText("");
      }
      
-     private void returnUserAmountBasedOnPhone(String pNumber){
+     private String returnUserAmountBasedOnPhone(String pNumber){
          String result;
          String previousAmount = txtPreviousAmount.getText();
          try{
@@ -231,29 +253,38 @@ public class DepositCash extends JFrame implements ActionListener{
                 ResultSet resultSet;
                 Statement statement = databaseConnection.getStatement();
                 resultSet = statement.executeQuery(query);
-
+             
                 if (!resultSet.next()) {
                     JOptionPane.showMessageDialog(null, "No Record found this user!!!");
                     clearText();
 
                 } else {
-                    if (previousAmount.equals("0.00")) {
-                        
-                    }
-                    String pAmount = resultSet.getString("pamount").trim();
-                    String aDeposited = resultSet.getString("adeposited").trim();
-                    String balance = resultSet.getString("balance").trim();
+                    String  preAmount;
+                    preAmount = resultSet.getString("pamount").trim();
+                    System.out.println("Pre Amount "+preAmount);
+                  int  preAmountInt = Integer.parseInt(preAmount);
+                    if (preAmountInt != 0) {
+                    
+                   String amtDeposited = resultSet.getString("adeposited").trim();
+                   String customerBalance = resultSet.getString("balance").trim();
+                    
+                   double preAmountDouble = Double.parseDouble(preAmount);
+                   double amtDepositedtDouble = Double.parseDouble(amtDeposited);
+                   double customerBalanceDouble = Double.parseDouble(customerBalance);
+                   
+                   updateToDatabase(preAmountDouble, amtDepositedtDouble, customerBalanceDouble);
 
-                    result = pAmount + "\t " + aDeposited+ "\t"+balance;
-                    System.out.println("Result "+result);
-                    txtPreviousAmount.setText(pAmount);
-
+                }
+                
+                    saveToDatabase();
+                
                 }
               
 
      }catch(Exception ex){
-         
+         ex.printStackTrace();
      }
+         return preAmount;
      }
      
      private double balanceCompute(double previousAmount,double amountDeposited ){
@@ -294,7 +325,50 @@ public class DepositCash extends JFrame implements ActionListener{
          return result;
      }
      
+     private void saveToDatabase(){
+            PreparedStatement ps;
+         try {
+        String pAmount, aDeposited,custBalance;
+      pAmount = txtPreviousAmount.getText();
+      aDeposited = txtAmountDeposited.getText();
+      custBalance = txtBalance.getText();
+        
+        String sql = "INSERT INTO  amountdeposited(pamount,adeposited,balance)values(?,?,?)";
+        databaseConnection.open();
+        
+	ps = databaseConnection.getConnection().prepareStatement(sql);
+        ps.setString(1, pAmount);
+	ps.setString(2, aDeposited);
+	ps.setString(3, custBalance);
+	
+			
+	//ps.executeUpdate();
+        
+    JOptionPane.showMessageDialog(null, "Account Created Successfully!!!!");
+       
+         } catch (Exception e) {
+             //e.printStackTrace();
+             System.err.println("Error in creating account!!!!!");
+         }
+         
+        
+         
+         
+         
+     }
      
+    private void updateToDatabase(double pAmount,double pAmountEntered,double balance){
+        
+         pAmount = Double.parseDouble(txtPreviousAmount.getText());
+         pAmountEntered = Double.parseDouble(txtAmountDeposited.getText());
+         balance = Double.parseDouble(txtBalance.getText());
+        
+        System.out.println("previous Amount "+pAmount);
+        System.out.println("Amount Deposited "+pAmountEntered);
+        System.out.println("Balance "+balance);
+        
+        
+    }
      
     public static void main(String[] args) {
         DepositCash cash = new DepositCash();
@@ -327,9 +401,12 @@ public class DepositCash extends JFrame implements ActionListener{
         }
         
         if (source.equals(btnSave)) {
+            
+            String balanceToDatabase;
            String  pNumber = txtPhoneNumber.getText();
            String amountDeposited = txtAmountDeposited.getText();
            String pAmount = txtPreviousAmount.getText();
+           String custBalance = txtBalance.getText();
            String aDeposited = txtAmountDeposited.getText();
             try{
                 
@@ -351,14 +428,35 @@ public class DepositCash extends JFrame implements ActionListener{
                 
                 
             }
+            
+               
+        }catch(Exception ex){
+            ex.printStackTrace();
         }
-            catch(Exception ex){
+            try{
                 
+            
+          //  String resultDataFromDatabaseForVerification = returnUserAmountBasedOnPhone(pNumber);
+            int result = Integer.parseInt(returnUserAmountBasedOnPhone(pNumber));
+            System.out.println("RESULT "+result);
+            if (result ==0) {
+                System.out.println("please saved");
+                saveToDatabase();
             }
+            else{
+                System.out.println("Please update");
+            //    updateToDatabase(result, result, result);
+            }
+           // System.out.println("result "+resultDataFromDatabaseForVerification);
+          //  updateToDatabase(pAmount,aDeposited,custBalance);
+          // returnUserAmountBasedOnPhone(pNumber);  
      }
-
+catch(Exception ex){
+    System.out.println("Error");
+              // ex.printStackTrace();
+            }
   
-    
+        }
     
     
     
