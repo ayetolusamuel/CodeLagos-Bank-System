@@ -108,9 +108,11 @@ public class DepositCash extends JFrame implements ActionListener{
          lblPreviousAmount = new JLabel("Previous Balance ");
         jPanel.add(lblPreviousAmount).setBounds(15, 130, 140, 20);
         lblPreviousAmount.setForeground(Color.white);
+        
         lblPreviousAmount.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         
         txtPreviousAmount = new JTextField();
+        txtPreviousAmount.setText("0.00");
         jPanel.add(txtPreviousAmount).setBounds(150, 131, 250, 20);
 
          lblAmountDeposited = new JLabel("Amount Deposited ");
@@ -133,6 +135,7 @@ public class DepositCash extends JFrame implements ActionListener{
         btnSave.setForeground(Color.MAGENTA);
         btnSave.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         jPanel.add(btnSave).setBounds(30,260,150,25);
+        btnSave.addActionListener(this);
 
          setInvisible();
         
@@ -171,38 +174,123 @@ public class DepositCash extends JFrame implements ActionListener{
     
     private String fetchDataBaseOnPhoneNumber(String number){
         String result = null;
-          try {
-            String query = "SELECT * FROM accountopening where pnumber like '" +number+"'";
-		
-            ResultSet resultSet;
-            Statement statement = databaseConnection.getStatement();
-            resultSet = statement.executeQuery(query);
-            
-            if (!resultSet.next() ) {
-                JOptionPane.showMessageDialog(null, "No Record found this user!!!");
-           
-            } 
-            else{
-               String fname = resultSet.getString("fname").trim();
-               String lname = resultSet.getString("lname").trim();
-               
-                result = lname +" "+fname;
-               
-               
-                
+        try {
           
+            if (number.length() != 11) {
+                System.out.println("Invalid phone number number!!!!");
+            } else {
+
+                String query = "SELECT * FROM accountopening where pnumber like '" + number + "'";
+
+                ResultSet resultSet;
+                Statement statement = databaseConnection.getStatement();
+                resultSet = statement.executeQuery(query);
+
+                if (!resultSet.next()) {
+                    JOptionPane.showMessageDialog(null, "No Record found this user!!!");
+                    clearText();
+
+                } else {
+                    String fname = resultSet.getString("fname").trim();
+                    String lname = resultSet.getString("lname").trim();
+
+                    result = lname + " " + fname;
+
+                }
+
             }
-            
-            
         } catch (SQLException ex) {
             Logger.getLogger(OpenAccount.class.getName()).log(Level.SEVERE, null, ex);
         }
-	return result;	
+
+        return result;
+
+    }
+    
+     
+     private void clearText(){
+         txtFullName.setText("");
      }
      
+     private void returnUserAmountBasedOnPhone(String pNumber){
+         String result;
+         String previousAmount = txtPreviousAmount.getText();
+         try{
+//             "Select * from generatorNepa where site like '"
+//                     + d
+//                     + "' AND nepaonofdate between '"
+//                     + startDate
+//                     + "' AND '"
+//                     + stopDate
+//                     + "' order by nepaonofdate  "
+//             
+             
+               // String query = "SELECT * FROM amountdeposited where pnumber like '" + pNumber + "'AND pin like '"+pin+"'";
+                     String query = "SELECT * FROM amountdeposited where pnumber like '"+pNumber+"'";
+                ResultSet resultSet;
+                Statement statement = databaseConnection.getStatement();
+                resultSet = statement.executeQuery(query);
+
+                if (!resultSet.next()) {
+                    JOptionPane.showMessageDialog(null, "No Record found this user!!!");
+                    clearText();
+
+                } else {
+                    if (previousAmount.equals("0.00")) {
+                        
+                    }
+                    String pAmount = resultSet.getString("pamount").trim();
+                    String aDeposited = resultSet.getString("adeposited").trim();
+                    String balance = resultSet.getString("balance").trim();
+
+                    result = pAmount + "\t " + aDeposited+ "\t"+balance;
+                    System.out.println("Result "+result);
+                    txtPreviousAmount.setText(pAmount);
+
+                }
+              
+
+     }catch(Exception ex){
+         
+     }
+     }
      
-   
+     private double balanceCompute(double previousAmount,double amountDeposited ){
+         double result = previousAmount + amountDeposited;
+         return result;
+     }
+     
+     private double returnBalanceFromDatabase(String pNumber ){
+           double result = 0;
+         try{
+         String query = "SELECT * FROM amountdeposited where pnumber like '"+pNumber+"'";
+                ResultSet resultSet;
+                Statement statement = databaseConnection.getStatement();
+                resultSet = statement.executeQuery(query);
+
+                if (!resultSet.next()) {
+                    JOptionPane.showMessageDialog(null, "No Record found this user!!!");
+                    clearText();
+
+                } else {
+                   String balance = resultSet.getString("balance").trim();
+                    System.out.println("Balnce "+balance);
+
+                    
+
+                }
+              
+
+     }catch(Exception ex){
+         
+     }
+     
+         
     
+        
+         return result;
+     }
+     
      
      
     public static void main(String[] args) {
@@ -220,8 +308,11 @@ public class DepositCash extends JFrame implements ActionListener{
             String number,result;
             number = txtPhoneNumber.getText();
             result = fetchDataBaseOnPhoneNumber(number);
-            if (result != null) {
-                txtFullName.setText(result);
+            if (result == null) {
+                //txtFullName.setText(result);
+                //returnUserAmountBasedOnPhone(number);
+                
+                
                 setVisible();
             }
                 
@@ -230,6 +321,34 @@ public class DepositCash extends JFrame implements ActionListener{
                 
                 }
         }
+        
+        if (source.equals(btnSave)) {
+           String  pNumber = txtPhoneNumber.getText();
+           String amountDeposited = txtAmountDeposited.getText();
+           String pAmount = txtPreviousAmount.getText();
+           String aDeposited = txtAmountDeposited.getText();
+            try{
+             double returnBalance = returnBalanceFromDatabase(pNumber);
+            
+            if ( returnBalance != 0) {
+                double balance = returnBalanceFromDatabase(pNumber);
+                double  totalBalance = balanceCompute(balance, Double.parseDouble(amountDeposited));
+                txtBalance.setText(Double.toString(totalBalance));
+                }
+            else{
+                
+              txtPreviousAmount.setText("0.00");
+              String previousAmount = txtPreviousAmount.getText();
+              double preAmountDouble = Double.parseDouble(previousAmount);
+              double  totalBalance = balanceCompute(preAmountDouble, Double.parseDouble(amountDeposited));
+              txtBalance.setText(Double.toString(totalBalance));
+                
+                
+            }
+        }
+            catch(Exception ex){
+                
+            }
      }
 
   
@@ -237,4 +356,4 @@ public class DepositCash extends JFrame implements ActionListener{
     
     
     
-}
+    }}
