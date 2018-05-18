@@ -19,6 +19,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -263,20 +264,24 @@ public class DepositCash extends JFrame implements ActionListener{
                     preAmount = resultSet.getString("pamount").trim();
                     System.out.println("Pre Amount "+preAmount);
                   int  preAmountInt = Integer.parseInt(preAmount);
-                    if (preAmountInt != 0) {
-                    
+                  
+                  
                    String amtDeposited = resultSet.getString("adeposited").trim();
                    String customerBalance = resultSet.getString("balance").trim();
                     
                    double preAmountDouble = Double.parseDouble(preAmount);
                    double amtDepositedtDouble = Double.parseDouble(amtDeposited);
                    double customerBalanceDouble = Double.parseDouble(customerBalance);
+                  if (preAmountInt != 0) {
+                    
+                  
                    
                    updateToDatabase(preAmountDouble, amtDepositedtDouble, customerBalanceDouble);
 
                 }
                 
-                    saveToDatabase();
+                    updateToDatabase(preAmountDouble, amtDepositedtDouble, customerBalanceDouble);
+ 
                 
                 }
               
@@ -342,7 +347,7 @@ public class DepositCash extends JFrame implements ActionListener{
 	ps.setString(3, custBalance);
 	
 			
-	//ps.executeUpdate();
+	ps.executeUpdate();
         
     JOptionPane.showMessageDialog(null, "Account Created Successfully!!!!");
        
@@ -357,17 +362,56 @@ public class DepositCash extends JFrame implements ActionListener{
          
      }
      
-    private void updateToDatabase(double pAmount,double pAmountEntered,double balance){
+    private void updateToDatabase(double pAmount,double pAmountDeposited,double balance){
         
          pAmount = Double.parseDouble(txtPreviousAmount.getText());
-         pAmountEntered = Double.parseDouble(txtAmountDeposited.getText());
+         pAmountDeposited = Double.parseDouble(txtAmountDeposited.getText());
          balance = Double.parseDouble(txtBalance.getText());
+         String pNumber = txtPhoneNumber.getText();
         
-        System.out.println("previous Amount "+pAmount);
-        System.out.println("Amount Deposited "+pAmountEntered);
-        System.out.println("Balance "+balance);
+         try{
+               PreparedStatement ps;
+             
+			System.out.println("ID Number"+pNumber);
+                        System.out.println("pAmount "+pAmount);
+                        System.out.println("AmountDeposited "+pAmountDeposited);
+                        System.out.println("Balance "+balance);
+                        
+                        
+               databaseConnection.open();
         
+       ps = databaseConnection.getConnection().prepareStatement("UPDATE amountdeposited SET pamount = ?, adeposited = ?, balance = ? WHERE pnumber = ?");
+                  
+ps.setString(1, String.valueOf(pAmount));
+ps.setString(2, String.valueOf(pAmountDeposited));
+ps.setString(3, String.valueOf(balance));
+ps.setString(4, pNumber);
+
+
+//ps.executeUpdate();
+//                        
+//                        
+//                        
+//                                                                       
+//               String update1 = "Update amountdeposited set pamount = '" + pAmount +"' where pnuumber = '" + pNumber+ "' " ;
+//		String update2 = "Update amountdeposited set adeposited = '" + pAmountDeposited +"'where pnumber = '" +  pNumber + "'" ;
+//                String update3 = "Update amountdeposited set balance = '" + balance +"' where pnumber = '" +  pNumber + "'" ;
+//	
+//               databaseConnection.open();
+//        
+//       ps = databaseConnection.getConnection().prepareStatement(update1);
+//      // ps = databaseConnection.getConnection().prepareStatement(update2);
+//      // ps = databaseConnection.getConnection().prepareStatement(update3);
+//       
+//	
+			
+	ps.executeUpdate();
         
+	JOptionPane.showMessageDialog(null, "Update Finished!");
+         }
+         catch(Exception ex){
+             ex.printStackTrace();
+         }
     }
      
     public static void main(String[] args) {
@@ -381,15 +425,14 @@ public class DepositCash extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent event) {
         Object source =  event.getSource();
         if (source.equals(btnCheck)) {
+            String number = null,result;
             try{
-            String number,result;
+            
             number = txtPhoneNumber.getText();
             result = fetchDataBaseOnPhoneNumber(number);
             if (result != null) {
                 txtFullName.setText(result);
-                //returnUserAmountBasedOnPhone(number);
-                
-                
+               
                 setVisible();
             }
           
@@ -398,11 +441,12 @@ public class DepositCash extends JFrame implements ActionListener{
         catch(Exception ex){
                 
                 }
+             
         }
         
         if (source.equals(btnSave)) {
             
-            String balanceToDatabase;
+           String balanceToDatabase;
            String  pNumber = txtPhoneNumber.getText();
            String amountDeposited = txtAmountDeposited.getText();
            String pAmount = txtPreviousAmount.getText();
@@ -428,34 +472,13 @@ public class DepositCash extends JFrame implements ActionListener{
                 
                 
             }
+            returnUserAmountBasedOnPhone(pNumber);
             
                
         }catch(Exception ex){
             ex.printStackTrace();
         }
-            try{
-                
             
-          //  String resultDataFromDatabaseForVerification = returnUserAmountBasedOnPhone(pNumber);
-            int result = Integer.parseInt(returnUserAmountBasedOnPhone(pNumber));
-            System.out.println("RESULT "+result);
-            if (result ==0) {
-                System.out.println("please saved");
-                saveToDatabase();
-            }
-            else{
-                System.out.println("Please update");
-            //    updateToDatabase(result, result, result);
-            }
-           // System.out.println("result "+resultDataFromDatabaseForVerification);
-          //  updateToDatabase(pAmount,aDeposited,custBalance);
-          // returnUserAmountBasedOnPhone(pNumber);  
-     }
-catch(Exception ex){
-    System.out.println("Error");
-              // ex.printStackTrace();
-            }
-  
         }
     
     
