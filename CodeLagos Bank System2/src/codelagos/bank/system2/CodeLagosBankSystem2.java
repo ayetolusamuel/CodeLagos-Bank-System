@@ -160,7 +160,10 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
             JOptionPane.showMessageDialog(null, "Loading..........\ncheck back");
         }
         if (source.equals(btnDepositCash)) {
-            JOptionPane.showMessageDialog(null, "Loading..........\ncheck back");
+            DepositCash cash = new DepositCash();
+        cash.setVisible(true);
+        cash.setSize(500,500);
+        cash.setLocation(300,100);
         }
         if (source.equals(btnTransferFunds)) {
             JOptionPane.showMessageDialog(null, "Loading..........\ncheck back");

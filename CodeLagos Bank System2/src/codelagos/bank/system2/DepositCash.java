@@ -13,12 +13,20 @@ import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -26,13 +34,16 @@ import javax.swing.JTextField;
  *
  * @author DELL
  */
-public class DepositCash extends JFrame{
+public class DepositCash extends JFrame implements ActionListener{
        private JPanel  jPanel;
        private JLabel lblPhoneNumber,lblFullName,lblPreviousAmount,lblAmountDeposited,lblBalance;
        private  JTextField txtPhoneNumber,txtFullName, txtPreviousAmount,txtAmountDeposited,txtBalance;
        private JButton btnCheck,btnSave;
+       DatabaseConnection databaseConnection = new DatabaseConnection();
     public DepositCash() throws HeadlessException {
+        databaseConnection.open();
         displayGUI();
+        
     }
     
     private void displayGUI(){
@@ -79,6 +90,7 @@ public class DepositCash extends JFrame{
         jPanel.add(txtPhoneNumber).setBounds(150, 51, 250, 20);
         
         btnCheck = new JButton(new ImageIcon("images//sam.gif"));
+        btnCheck.addActionListener(this);
         jPanel.add(btnCheck).setBounds(410,50,38,25);
         
         
@@ -90,6 +102,7 @@ public class DepositCash extends JFrame{
         
         txtFullName = new JTextField();
         txtFullName.setEditable(false);
+         txtFullName.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         jPanel.add(txtFullName).setBounds(150, 91, 250, 20);
 
          lblPreviousAmount = new JLabel("Previous Balance ");
@@ -142,25 +155,84 @@ public class DepositCash extends JFrame{
     }
     
     private void setVisible(){
-        lblFullName.setEnabled(false);
-        txtFullName.setEnabled(false);
-        lblPreviousAmount.setEnabled(false);
+        lblFullName.setEnabled(true);
+        txtFullName.setEnabled(true);
+        lblPreviousAmount.setEnabled(true);
         txtPreviousAmount.setEditable(false);
-        lblAmountDeposited.setEnabled(false);
-        txtAmountDeposited.setEditable(false);
-        lblBalance.setEnabled(false);
+        lblAmountDeposited.setEnabled(true);
+        txtAmountDeposited.setEditable(true);
+        lblBalance.setEnabled(true);
         txtBalance.setEditable(false);
-        btnSave.setEnabled(false);
+        btnSave.setEnabled(true);
         
         
     }
     
+    
+    private String fetchDataBaseOnPhoneNumber(String number){
+        String result = null;
+          try {
+            String query = "SELECT * FROM accountopening where pnumber like '" +number+"'";
+		
+            ResultSet resultSet;
+            Statement statement = databaseConnection.getStatement();
+            resultSet = statement.executeQuery(query);
+            
+            if (!resultSet.next() ) {
+                JOptionPane.showMessageDialog(null, "No Record found this user!!!");
+           
+            } 
+            else{
+               String fname = resultSet.getString("fname").trim();
+               String lname = resultSet.getString("lname").trim();
+               
+                result = lname +" "+fname;
+               
+               
+                
+          
+            }
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(OpenAccount.class.getName()).log(Level.SEVERE, null, ex);
+        }
+	return result;	
+     }
+     
+     
+   
+    
+     
+     
     public static void main(String[] args) {
         DepositCash cash = new DepositCash();
         cash.setVisible(true);
         cash.setSize(500,500);
         cash.setLocation(300,100);
     }
+
+    @Override
+    public void actionPerformed(ActionEvent event) {
+        Object source =  event.getSource();
+        if (source.equals(btnCheck)) {
+            try{
+            String number,result;
+            number = txtPhoneNumber.getText();
+            result = fetchDataBaseOnPhoneNumber(number);
+            if (result != null) {
+                txtFullName.setText(result);
+                setVisible();
+            }
+                
+            }
+        catch(Exception ex){
+                
+                }
+        }
+     }
+
+  
     
     
     

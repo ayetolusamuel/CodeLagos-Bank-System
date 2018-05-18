@@ -44,8 +44,8 @@ public class OpenAccount extends JFrame implements ActionListener{
 
     private JPanel jPanel;
     private JButton btnBackToMain,btnSave;
-    private JLabel lblFirstName,lblLastName,lblPhoneNumber,lblAccountType;
-    private JTextField txtFirstName,txtLastName,txtPhoneNumber;
+    private JLabel lblFirstName,lblLastName,lblPhoneNumber,lblAccountType,lblPin;
+    private JTextField txtFirstName,txtLastName,txtPhoneNumber,txtPin;
     JComboBox<String> jcmbAccountType;
     private String[] account = {"Saving","Current","Fixed"};
     private JLabel lblAccountNumber;
@@ -67,11 +67,11 @@ public class OpenAccount extends JFrame implements ActionListener{
                                 @Override
 				public void windowClosing(WindowEvent e)
 				{       
-                                    CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
-                                    bankSystem2.setLocation(300, 100);
-                                    bankSystem2.setResizable(false);
-                                    bankSystem2.setSize(550, 430); 
-                                    bankSystem2.setVisible(true);
+//                                    CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
+//                                    bankSystem2.setLocation(300, 100);
+//                                    bankSystem2.setResizable(false);
+//                                    bankSystem2.setSize(550, 430); 
+//                                    bankSystem2.setVisible(true);
 				}
 			});
 		
@@ -107,7 +107,7 @@ public class OpenAccount extends JFrame implements ActionListener{
         
           //System.out.print("1.\tOPEN ACCOUNT\n2.\tDEPOSIT CASH\n3.\tWITHDRAW CASH\n4.\tTRANSFER FUNDS\n5.\tCHECK BALANCE\n6.\tEXIT APPLICATION\n\n");
         JLabel lblWelcome = new JLabel("<html><b>Account Registration Portal");
-        lblWelcome.setForeground(Color.red);
+        lblWelcome.setForeground(Color.MAGENTA);
         lblWelcome.setFont(new Font("Times New Roman", Font.ITALIC, 18));
         jPanel.add(lblWelcome).setBounds(180,10,290,20);
         
@@ -123,7 +123,23 @@ public class OpenAccount extends JFrame implements ActionListener{
         jPanel.add(btnSearch).setBounds(480,50,60,50);
         btnSearch.addActionListener(this);
         
+        lblPin = new JLabel("<html><b>Enter four digit pin....");
+        lblPin.setForeground(Color.red);
+        lblPin.setFont(new Font("Times New Roman", Font.ITALIC, 18));
+        jPanel.add(lblPin).setBounds(180,45,180,50);
         
+        txtPin = new JTextField();
+        jPanel.add(txtPin).setBounds(360,64,40,20);
+        txtPin.addKeyListener(new KeyAdapter () {
+                                @Override
+				public void keyTyped (KeyEvent ke) {
+					char c = ke.getKeyChar ();
+					if (! ( (c == KeyEvent.VK_BACK_SPACE))) {
+						if (!(c == '0' || c == '1' || c == '2' || c == '3' || c == '4' ||
+					            c == '5' || c == '6' || c == '7' || c == '8' || c == '9')) {
+								getToolkit().beep ();
+								ke.consume ();}}}});
+		
         
         
         lblFirstName = new JLabel("<html><b>First Name");
@@ -140,7 +156,7 @@ public class OpenAccount extends JFrame implements ActionListener{
        
         
         
-        lblLastName = new JLabel("<html><b>Last Name");
+        lblLastName = new JLabel("<html><b>Last Name|Surname");
         lblLastName.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         lblLastName.setForeground(Color.white);
         jPanel.add(lblLastName).setBounds(10,140,160,40);
@@ -241,11 +257,12 @@ public class OpenAccount extends JFrame implements ActionListener{
      
     private boolean isFieldEmpty() {
         boolean flag = true;
-        String fName, lastName, number;
+        String fName, lastName, number,pin;
         fName = txtFirstName.getText();
         lastName = txtLastName.getText();
         number = txtPhoneNumber.getText();
-        if (fName.length() == 0 || lastName.length() == 0 || number.length() == 0) {
+        pin= txtPin.getText();
+        if (fName.length() == 0 || lastName.length() == 0 || number.length() == 0 || pin.length() ==0) {
             JOptionPane.showMessageDialog(null, "Fill all editable fields");
             
             flag = false;
@@ -280,6 +297,7 @@ public class OpenAccount extends JFrame implements ActionListener{
                String lname = resultSet.getString("lname").trim();
                String atype = resultSet.getString("atype").trim();
                String num = resultSet.getString("pnumber").trim();
+               String pin = resultSet.getString("pin").trim();
               
               // System.out.println("\n\n");
               // System.out.println("fName "+fname + "lat "+lname+ "atype "+atype+ "num "+num);
@@ -319,16 +337,17 @@ public class OpenAccount extends JFrame implements ActionListener{
          txtLastName.setText("");
          txtPhoneNumber.setText("");
          txtAccountNumber.setText("");
+         txtPin.setText("");
      }
      
      private void insertToDatabase(){
          PreparedStatement ps;
          try {
-        String fName, lastName, number, aNumber,aType;
+        String fName, lastName, number, aNumber,aType,pin;
         fName = txtFirstName.getText(); lastName = txtLastName.getText(); number = txtPhoneNumber.getText();
-        aNumber = txtAccountNumber.getText(); aType = jcmbAccountType.getSelectedItem().toString();
+        aNumber = txtAccountNumber.getText(); aType = jcmbAccountType.getSelectedItem().toString();pin = txtPin.getText();
             
-        String sql = "INSERT INTO  accountopening(fname,lname,pnumber,anumber,atype)values(?,?,?,?,?)";
+        String sql = "INSERT INTO  accountopening(fname,lname,pnumber,anumber,atype,pin)values(?,?,?,?,?,?)";
         databaseConnection.open();
         
 	ps = databaseConnection.getConnection().prepareStatement(sql);
@@ -337,6 +356,7 @@ public class OpenAccount extends JFrame implements ActionListener{
 	ps.setString(3, number);
 	ps.setString(4, aNumber);
 	ps.setString(5, aType);
+        ps.setString(6, pin);
 			
 	ps.executeUpdate();
         
@@ -368,10 +388,10 @@ public class OpenAccount extends JFrame implements ActionListener{
                String lname = resultSet.getString("lname").trim();
                String anumber = resultSet.getString("anumber").trim();
                String atype = resultSet.getString("atype").trim();
-               String num = resultSet.getString("pnumber").trim();
+               String pin = resultSet.getString("pin").trim();
               
                
-               displayUserSearchResult(fname, lname, anumber, atype);
+               displayUserSearchResult(fname, lname, anumber, atype,pin);
                 
           
             }
@@ -384,12 +404,13 @@ public class OpenAccount extends JFrame implements ActionListener{
      }
      
      
-     private void displayUserSearchResult(String fname,String lname,String anumber,String atype){
+     private void displayUserSearchResult(String fname,String lname,String anumber,String atype,String pin){
             JOptionPane.showMessageDialog(null, "Record Found for this user ");
                 JOptionPane.showMessageDialog(null, "<html><i>  First Name : "+fname+
                                                               "\nLast Name :"+lname+
                                                               "\nAccount Number :"+anumber+
-                                                               "\nAccount Type :"+atype);
+                                                               "\nAccount Type :"+atype+
+                                                               "\nPin Number :"+pin);
   }
      
      private void searchUser(){
@@ -432,4 +453,12 @@ public class OpenAccount extends JFrame implements ActionListener{
     
     
 }
+    
+    public static void main(String[] args) {
+        OpenAccount openAccount = new OpenAccount();
+            openAccount.setLocation(300, 100);
+             openAccount.setResizable(false);
+              openAccount.  setSize(550, 430); 
+              openAccount.setVisible(true);
+    }
 }
