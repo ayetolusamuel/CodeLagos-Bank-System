@@ -16,11 +16,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  *
@@ -34,6 +37,7 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
     private JButton btnTransferFunds;
     private JButton btnWithdrawCash;
     private JButton btnCheckBalance;
+    DatabaseConnection databaseConnection = new DatabaseConnection();
    
     public CodeLagosBankSystem2() {
         getGUI();
@@ -134,15 +138,95 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
     
 
     }
-//    public static void main(String[] args) {
-//        CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
-//         bankSystem2.setLocation(300, 100);
-//        bankSystem2.setResizable(false);
-//        bankSystem2.setSize(550, 430); 
-//        bankSystem2.setVisible(true);
-//    }
+    public static void main(String[] args) {
+        CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
+         bankSystem2.setLocation(300, 100);
+        bankSystem2.setResizable(false);
+        bankSystem2.setSize(550, 430); 
+        bankSystem2.setVisible(true);
+    }
 
    
+    /////////////////////////////////////////////////////////
+    private void popUp(){
+        JTextField txtPhoneNumber = new JTextField();
+        JTextField txtpin = new JTextField();
+        txtPhoneNumber.setToolTipText("Enter your phone Here!!!!!!!!!!!!");
+        txtpin.setToolTipText("Enter your four digits pin number!!!!!!!!!!!");
+        Object[] message = {"Phone Number", txtPhoneNumber, "Pin Number",txtpin };
+	
+        int option = JOptionPane.showConfirmDialog(null, message, "",JOptionPane.CLOSED_OPTION);
+        
+        if (option == JOptionPane.OK_OPTION) {
+            String phoneNumber = txtPhoneNumber.getText();
+            String pin = txtpin.getText();
+        
+            // int pin = Integer.parseInt(txtpin.getText());
+           try{
+            
+            
+               
+                int pinInt = Integer.parseInt(txtpin.getText());
+            
+             if ((phoneNumber.length() != 0) && (pin.length() !=0)) {
+			returnDataBasePhoneNumberPin(phoneNumber, pinInt);
+			System.out.println("Setonji");
+			
+		
+             }else{
+                    System.out.println("Exit");
+                }
+             
+    }
+            catch(Exception ex){
+                
+            }
+        }}
+    
+    private void returnDataBasePhoneNumberPin(String number,int pin){
+               try{   
+                   
+                    //String query = "SELECT * FROM amountdeposited where pnumber like '" + number + "'AND pin  '"+pin+"'";
+                   String query = "SELECT * FROM amountdeposited where pin like '" + pin + "' AND pnumber like '"+number+"'"; 
+                    ResultSet resultSet;
+                    databaseConnection.open();
+                    
+                Statement statement = databaseConnection.getStatement();
+                resultSet = statement.executeQuery(query);
+                   
+                if (!resultSet.next()) {
+                    JOptionPane.showMessageDialog(null, "No Record found this user!!!");
+                    //clearText();
+
+                } else {
+                    String  preAmount;
+                    preAmount = resultSet.getString("pamount").trim();
+                   String amtDeposited = resultSet.getString("adeposited").trim();
+                   String customerBalance = resultSet.getString("balance").trim();
+                    
+                   JOptionPane.showMessageDialog(null, "<html><i>Welcome "+number+"\n<html><i>Your Balance is \""+customerBalance+"\"");
+                  // System.out.println("Pre Amount "+preAmount);
+                   double preAmountDouble = Double.parseDouble(preAmount);
+                   double amtDepositedtDouble = Double.parseDouble(amtDeposited);
+                   double customerBalanceDouble = Double.parseDouble(customerBalance);
+		
+                }
+                }catch(Exception ex){
+                    
+                }
+        
+    }
+    
+  
+    
+    ////////////////////////////////
+    
+    
+    
+    
+    
+    
+    
 
     @Override
     public void actionPerformed(ActionEvent event) {
@@ -157,7 +241,9 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
           
         }
         if (source.equals(btnCheckBalance)) {
-            JOptionPane.showMessageDialog(null, "Loading..........\ncheck back");
+        popUp();
+        
+        
         }
         if (source.equals(btnDepositCash)) {
             setVisible(false);

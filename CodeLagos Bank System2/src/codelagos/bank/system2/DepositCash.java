@@ -101,7 +101,6 @@ public class DepositCash extends JFrame implements ActionListener{
         lblPhoneNumber.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         
         txtPhoneNumber = new JTextField();
-        txtPhoneNumber.setText("08167137007");
          txtPhoneNumber.addKeyListener(new KeyAdapter () {
                                 @Override
 				public void keyTyped (KeyEvent ke) {
