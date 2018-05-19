@@ -14,10 +14,14 @@ import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -50,9 +54,9 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
 				public void windowClosing(WindowEvent e)
 				{       
 					
-		LoginFirst loginFirst =new LoginFirst();
-		loginFirst.setVisible(true);
-		loginFirst.setDefaultCloseOperation(3);
+//		LoginFirst loginFirst =new LoginFirst();
+//		loginFirst.setVisible(true);
+//		loginFirst.setDefaultCloseOperation(3);
 				
 				}
 			});
@@ -152,10 +156,37 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
         JTextField txtPhoneNumber = new JTextField();
         JTextField txtpin = new JTextField();
         txtPhoneNumber.setToolTipText("Enter your phone Here!!!!!!!!!!!!");
+          txtPhoneNumber.addKeyListener(new KeyAdapter () {
+                                @Override
+				public void keyTyped (KeyEvent ke) {
+					char c = ke.getKeyChar ();
+					if (! ( (c == KeyEvent.VK_BACK_SPACE))) {
+						if (!(c == '0' || c == '1' || c == '2' || c == '3' || c == '4' ||
+					            c == '5' || c == '6' || c == '7' || c == '8' || c == '9')) {
+								getToolkit().beep ();
+								ke.consume ();}}}});
+		
+        
+            txtpin.addKeyListener(new KeyAdapter () {
+                                @Override
+				public void keyTyped (KeyEvent ke) {
+					char c = ke.getKeyChar ();
+					if (! ( (c == KeyEvent.VK_BACK_SPACE))) {
+						if (!(c == '0' || c == '1' || c == '2' || c == '3' || c == '4' ||
+					            c == '5' || c == '6' || c == '7' || c == '8' || c == '9')) {
+								getToolkit().beep ();
+								ke.consume ();}}}});
+		
+        
         txtpin.setToolTipText("Enter your four digits pin number!!!!!!!!!!!");
         Object[] message = {"Phone Number", txtPhoneNumber, "Pin Number",txtpin };
 	
-        int option = JOptionPane.showConfirmDialog(null, message, "",JOptionPane.CLOSED_OPTION);
+        
+   Icon error=new ImageIcon("images//info.jpg");
+    //JOptionPane.showMessageDialog(this,"<html><font size=4 color=red>Invalid Password \n\t\t Please enter valid password","Login",JOptionPane.ERROR_MESSAGE,error);
+				
+        
+        int option = JOptionPane.showConfirmDialog(null, message, "Customer Information",JOptionPane.PLAIN_MESSAGE,JOptionPane.INFORMATION_MESSAGE,error);
         
         if (option == JOptionPane.OK_OPTION) {
             String phoneNumber = txtPhoneNumber.getText();
@@ -170,7 +201,7 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
             
              if ((phoneNumber.length() != 0) && (pin.length() !=0)) {
 			returnDataBasePhoneNumberPin(phoneNumber, pinInt);
-			System.out.println("Setonji");
+			//System.out.println("Setonji");
 			
 		
              }else{
@@ -206,10 +237,10 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
                     
                    JOptionPane.showMessageDialog(null, "<html><i>Welcome "+number+"\n<html><i>Your Balance is \""+customerBalance+"\"");
                   // System.out.println("Pre Amount "+preAmount);
-                   double preAmountDouble = Double.parseDouble(preAmount);
-                   double amtDepositedtDouble = Double.parseDouble(amtDeposited);
-                   double customerBalanceDouble = Double.parseDouble(customerBalance);
-		
+//                   double preAmountDouble = Double.parseDouble(preAmount);
+//                   double amtDepositedtDouble = Double.parseDouble(amtDeposited);
+//                   double customerBalanceDouble = Double.parseDouble(customerBalance);
+//		
                 }
                 }catch(Exception ex){
                     
