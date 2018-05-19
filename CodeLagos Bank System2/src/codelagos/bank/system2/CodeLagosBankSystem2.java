@@ -9,6 +9,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
@@ -18,7 +19,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -27,6 +30,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 /**
@@ -42,6 +46,9 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
     private JButton btnWithdrawCash;
     private JButton btnCheckBalance;
     DatabaseConnection databaseConnection = new DatabaseConnection();
+    private JTextField txtPhoneNumber;
+   private JPasswordField txtpin;
+    private JTextField txtWithdraw;
    
     public CodeLagosBankSystem2() {
         getGUI();
@@ -54,14 +61,15 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
 				public void windowClosing(WindowEvent e)
 				{       
 					
-//		LoginFirst loginFirst =new LoginFirst();
-//		loginFirst.setVisible(true);
-//		loginFirst.setDefaultCloseOperation(3);
+		LoginFirst loginFirst =new LoginFirst();
+		loginFirst.setVisible(true);
+		loginFirst.setDefaultCloseOperation(3);
 				
 				}
 			});
 		
-        
+        Image img=Toolkit.getDefaultToolkit().getImage("images//codelagos.jpg");
+		setIconImage(img);
         jPanel = new JPanel(){
              @Override
              public void paintComponent(Graphics g)
@@ -152,9 +160,9 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
 
    
     /////////////////////////////////////////////////////////
-    private void popUp(){
-        JTextField txtPhoneNumber = new JTextField();
-        JTextField txtpin = new JTextField();
+    private void balancepopUp(){
+        txtPhoneNumber = new JTextField();
+        txtpin = new JPasswordField();
         txtPhoneNumber.setToolTipText("Enter your phone Here!!!!!!!!!!!!");
           txtPhoneNumber.addKeyListener(new KeyAdapter () {
                                 @Override
@@ -190,14 +198,15 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
         
         if (option == JOptionPane.OK_OPTION) {
             String phoneNumber = txtPhoneNumber.getText();
-            String pin = txtpin.getText();
+            char[] pinChar = txtpin.getPassword();
+            String pin = new String(pinChar);
         
             // int pin = Integer.parseInt(txtpin.getText());
            try{
             
             
                
-                int pinInt = Integer.parseInt(txtpin.getText());
+                int pinInt = Integer.parseInt(pin);
             
              if ((phoneNumber.length() != 0) && (pin.length() !=0)) {
 			returnDataBasePhoneNumberPin(phoneNumber, pinInt);
@@ -214,8 +223,185 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
             }
         }}
     
-    private void returnDataBasePhoneNumberPin(String number,int pin){
-               try{   
+    
+     private void withdrawpopUp(){
+        txtPhoneNumber = new JTextField();
+        txtpin = new JPasswordField();
+        txtPhoneNumber.setToolTipText("Enter your phone Here!!!!!!!!!!!!");
+          txtPhoneNumber.addKeyListener(new KeyAdapter () {
+                                @Override
+				public void keyTyped (KeyEvent ke) {
+					char c = ke.getKeyChar ();
+					if (! ( (c == KeyEvent.VK_BACK_SPACE))) {
+						if (!(c == '0' || c == '1' || c == '2' || c == '3' || c == '4' ||
+					            c == '5' || c == '6' || c == '7' || c == '8' || c == '9')) {
+								getToolkit().beep ();
+								ke.consume ();}}}});
+		
+       txtWithdraw = new JTextField();
+        txtWithdraw.addKeyListener(new KeyAdapter () {
+                                @Override
+				public void keyTyped (KeyEvent ke) {
+					char c = ke.getKeyChar ();
+					if (! ( (c == KeyEvent.VK_BACK_SPACE))) {
+						if (!(c == '0' || c == '1' || c == '2' || c == '3' || c == '4' ||
+					            c == '5' || c == '6' || c == '7' || c == '8' || c == '9')) {
+								getToolkit().beep ();
+								ke.consume ();}}}});
+        Object[] message = {"Phone Number", txtPhoneNumber, "Amount to be withdraw",txtWithdraw};
+	
+        
+   Icon error=new ImageIcon("images//info.jpg");
+    //JOptionPane.showMessageDialog(this,"<html><font size=4 color=red>Invalid Password \n\t\t Please enter valid password","Login",JOptionPane.ERROR_MESSAGE,error);
+				
+        
+        int option = JOptionPane.showConfirmDialog(null, message, "Customer Information",JOptionPane.PLAIN_MESSAGE,JOptionPane.INFORMATION_MESSAGE,error);
+        
+        if (option == JOptionPane.OK_OPTION) {
+            String phoneNumber = txtPhoneNumber.getText();
+           
+            // int pin = Integer.parseInt(txtpin.getText());
+           try{
+            
+            
+               
+             
+             if ((phoneNumber.length() != 0)) {
+                    returnBalance();
+//System.out.println("Setonji");
+			
+		
+             }else{
+                    System.out.println("Exit");
+                }
+             
+    }
+            catch(Exception ex){
+                
+            }
+        }}
+    
+    
+    private void updateAccount(String number,String preAmount,String withdraw,String balance){
+         try{
+             PreparedStatement ps;
+
+
+             databaseConnection.open();
+
+                  ps = databaseConnection.getConnection().prepareStatement("UPDATE amountdeposited SET pamount = ?, adeposited = ?, balance = ? WHERE pnumber = ?");
+
+             ps.setString(1, String.valueOf(preAmount));
+             ps.setString(2, String.valueOf(withdraw));
+             ps.setString(3, String.valueOf(balance));
+             ps.setString(4, number);
+
+
+
+
+		
+	ps.executeUpdate();
+        
+	//JOptionPane.showMessageDialog(null, "Account Updated Successfully!!!!");
+      
+         }   
+        catch(Exception ex){
+            ex.printStackTrace();
+        }
+    }
+    
+    private void returnBalance(){
+        String number = txtPhoneNumber.getText();
+       double balance =Double.parseDouble(returnBalanceBasePhoneNumber(number));
+       double amountToWithdraw = Double.parseDouble(txtWithdraw.getText());
+        
+        double result = withdrawComfirm(balance, amountToWithdraw);
+        if (result == 0) {
+            Icon error=new ImageIcon("images//error.jpg");
+            JOptionPane.showMessageDialog(null, "<html><i>Insufficient balance\n<html><i><b>Your Balance is "+balance,"ERROR",JOptionPane.PLAIN_MESSAGE,error);
+          // System.out.println("Insufficient balance\nYour Balance "+balance); 
+        }
+        else{
+            //System.out.println("Before withdraw "+balance);
+            //System.out.println("After withdraw  balance is "+result);
+           // System.out.println((int)amountToWithdraw + " withdraw successfully from your account");
+            //update account
+           // updateAccount(number,String.valueOf(balance),String.valueOf(amountToWithdraw), String.valueOf(result));
+           double pre = updatePreviousAmount(result);
+          //  System.out.println("After Transaction");
+            updateAccount(number,String.valueOf(pre),String.valueOf(amountToWithdraw), String.valueOf(result));
+           
+          // System.out.println("Previous "+pre);
+            
+            System.out.println("Amount withdraw is "+txtWithdraw.getText());
+            //show balance
+            JOptionPane.showMessageDialog(null, (int)amountToWithdraw + " withdraw successfully from your account!!!!! "
+                    + "\nYour New Balance is "+result);
+           // System.out.println("After withdraw "+result);
+            
+           
+            
+            
+            
+        } 
+    }
+    
+    
+      private double updatePreviousAmount(double result) {
+          double preAmount = 0;
+          double deposited = Double.parseDouble(txtWithdraw.getText());
+         
+        
+          
+          if (result !=0 ) {
+              preAmount = result - deposited;
+             }
+          return preAmount;
+      }
+
+    
+    
+    
+    private double withdrawComfirm(double balance, double withdraw){
+        double result = 0;
+        
+        if (withdraw>balance) {
+            //System.out.println("Insufficient balance");
+            //returnBalance();
+        }
+        else{
+           result =  balance-withdraw;
+        }
+        return result;
+    }
+    
+      private String returnBalanceBasePhoneNumber(String number) {
+         String customerBalance = null;      
+        try{  
+            String query = "SELECT * FROM amountdeposited where  pnumber like '"+number+"'"; 
+                    ResultSet resultSet;
+                    databaseConnection.open();
+                    
+                Statement statement = databaseConnection.getStatement();
+                resultSet = statement.executeQuery(query);
+                   
+                if (!resultSet.next()) {
+                    JOptionPane.showMessageDialog(null, "No Record found this user!!!");
+                 
+                } else {
+                    customerBalance = resultSet.getString("balance").trim();
+                    
+                     }
+                }catch(HeadlessException | SQLException ex){
+                    
+                }
+        return customerBalance;
+    }
+       
+    private String returnDataBasePhoneNumberPin(String number,int pin){
+          String customerBalance = null;      
+        try{   
+                
                    
                     //String query = "SELECT * FROM amountdeposited where pnumber like '" + number + "'AND pin  '"+pin+"'";
                    String query = "SELECT * FROM amountdeposited where pin like '" + pin + "' AND pnumber like '"+number+"'"; 
@@ -233,19 +419,15 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
                     String  preAmount;
                     preAmount = resultSet.getString("pamount").trim();
                    String amtDeposited = resultSet.getString("adeposited").trim();
-                   String customerBalance = resultSet.getString("balance").trim();
+                    customerBalance = resultSet.getString("balance").trim();
                     
                    JOptionPane.showMessageDialog(null, "<html><i>Welcome "+number+"\n<html><i>Your Balance is \""+customerBalance+"\"");
-                  // System.out.println("Pre Amount "+preAmount);
-//                   double preAmountDouble = Double.parseDouble(preAmount);
-//                   double amtDepositedtDouble = Double.parseDouble(amtDeposited);
-//                   double customerBalanceDouble = Double.parseDouble(customerBalance);
-//		
+
                 }
                 }catch(Exception ex){
                     
                 }
-        
+        return customerBalance;
     }
     
   
@@ -272,7 +454,7 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
           
         }
         if (source.equals(btnCheckBalance)) {
-        popUp();
+        balancepopUp();
         
         
         }
@@ -287,9 +469,12 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
             JOptionPane.showMessageDialog(null, "Loading..........\ncheck back");
         }
         if (source.equals(btnWithdrawCash)) {
-            JOptionPane.showMessageDialog(null, "Loading..........\ncheck back");
+        withdrawpopUp();
         }
         }
+
+  
+  
 
     
 }

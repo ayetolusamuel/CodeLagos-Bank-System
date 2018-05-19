@@ -27,6 +27,7 @@ import java.sql.Statement;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.control.PasswordField;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -34,6 +35,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 /**
@@ -45,7 +47,7 @@ public class OpenAccount extends JFrame implements ActionListener{
     private JPanel jPanel;
     private JButton btnBackToMain,btnSave;
     private JLabel lblFirstName,lblLastName,lblPhoneNumber,lblAccountType,lblPin;
-    private JTextField txtFirstName,txtLastName,txtPhoneNumber,txtPin;
+    private JTextField txtFirstName,txtLastName,txtPhoneNumber;
     JComboBox<String> jcmbAccountType;
     private String[] account = {"Saving","Current","Fixed"};
     private JLabel lblAccountNumber;
@@ -53,6 +55,7 @@ public class OpenAccount extends JFrame implements ActionListener{
     private String accounNumber;
     private JButton btnClear;
     private JButton btnSearch;
+    private JPasswordField txtPin;
     DatabaseConnection databaseConnection = new DatabaseConnection();
 
     public OpenAccount() throws HeadlessException {
@@ -99,6 +102,8 @@ public class OpenAccount extends JFrame implements ActionListener{
 			}
           
         };
+        Image img=Toolkit.getDefaultToolkit().getImage("images//codelagos.jpg");
+		setIconImage(img);
         jPanel.setLayout(null);
         setVisible(true);
         setLocation(300, 100);
@@ -128,7 +133,7 @@ public class OpenAccount extends JFrame implements ActionListener{
         lblPin.setFont(new Font("Times New Roman", Font.ITALIC, 18));
         jPanel.add(lblPin).setBounds(180,45,180,50);
         
-        txtPin = new JTextField();
+        txtPin = new JPasswordField();
         jPanel.add(txtPin).setBounds(360,64,40,20);
         txtPin.addKeyListener(new KeyAdapter () {
                                 @Override
@@ -261,7 +266,9 @@ public class OpenAccount extends JFrame implements ActionListener{
         fName = txtFirstName.getText();
         lastName = txtLastName.getText();
         number = txtPhoneNumber.getText();
-        pin= txtPin.getText();
+        char[] pinChar = txtPin.getPassword();
+        pin= new String(pinChar);
+        
         if (fName.length() == 0 || lastName.length() == 0 || number.length() == 0 || pin.length() ==0) {
             JOptionPane.showMessageDialog(null, "Fill all editable fields");
             
@@ -343,9 +350,10 @@ public class OpenAccount extends JFrame implements ActionListener{
      private void insertToDatabase(){
          PreparedStatement ps;
          try {
+                     char[] pinChar = txtPin.getPassword();
         String fName, lastName, number, aNumber,aType,pin;
         fName = txtFirstName.getText(); lastName = txtLastName.getText(); number = txtPhoneNumber.getText();
-        aNumber = txtAccountNumber.getText(); aType = jcmbAccountType.getSelectedItem().toString();pin = txtPin.getText();
+        aNumber = txtAccountNumber.getText(); aType = jcmbAccountType.getSelectedItem().toString();pin = new String(pinChar);
             
         String sql = "INSERT INTO  accountopening(fname,lname,pnumber,anumber,atype,pin)values(?,?,?,?,?,?)";
         databaseConnection.open();

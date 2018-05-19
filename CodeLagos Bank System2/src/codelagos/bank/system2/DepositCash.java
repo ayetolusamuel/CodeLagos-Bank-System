@@ -94,6 +94,9 @@ public class DepositCash extends JFrame implements ActionListener{
 			}
           
         };
+         
+         Image img=Toolkit.getDefaultToolkit().getImage("images//codelagos.jpg");
+		setIconImage(img);
         jPanel.setLayout(null);
         lblPhoneNumber = new JLabel("Phone Number ");
         jPanel.add(lblPhoneNumber).setBounds(15, 50, 100, 20);
