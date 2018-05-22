@@ -437,7 +437,7 @@ public class TransferFunds extends JFrame implements ActionListener{
                 //update
             }
            
-            System.out.println("Pre Amount "+pr);
+            System.out.println("Pre Amount "+preAmount);
             
             
             //update sender details after succesful transfer
@@ -665,55 +665,55 @@ public class TransferFunds extends JFrame implements ActionListener{
     
     
     
-    private void computeSenderTransfer(){
-          String receiverNumber = txtReceiverPhone.getText();
-            try{
-            String senderNumber = txtSenderPhone.getText();
-             //System.out.println("Sender "+senderNumber);
-           String balance = returnBalanceBasePhone(senderNumber);
-           // System.out.println("Sender Balance "+balance );
-            
-            double amtTransfer = Double.parseDouble(txtAmountTransfer.getText());    // amt transfer
-            System.out.println("Amount Transfer "+txtAmountTransfer.getText());
-            
-            double balanceAfterTransfer = returnPreAmountBaseBalance(Double.parseDouble(balance));
-            System.out.println("Balance After Transfer" +balanceAfterTransfer);   //balance after transfer
-            double preAmountAfterTransfer = returnPreAmountBaseBalanceAfterTransaction(balanceAfterTransfer,amtTransfer) ;
-          //  System.out.println("PreaAmount After Transfefr "+preAmountAfterTransfer);
-            txtRemainBalance.setText(Double.toString(balanceAfterTransfer));
-            
-            if (preAmountAfterTransfer != 0 && balance != null) {
-                System.out.println("########################################\n\n");
-               // System.out.println("Pre Amount "+preAmountAfterTransfer);              //save this to preamount
-              //  System.out.println("Transfer "+txtAmountTransfer.getText());
-              //  System.out.println("balance After transfer "+balanceAfterTransfer);
-              
-              
-              
-                // updateSenderAmountDetails(senderNumber, Double.toString(preAmountAfterTransfer),Double.toString(amtTransfer),  Double.toString(balanceAfterTransfer));
-           
-                 
-                 returnReceiverAmountDetailsBasedOnPhone(receiverNumber);
-                 
-                 
-                 
-                 
-            }
-            else{
-                ///save the data
-                
-                
-                txtRemainBalance.setText("Insufficient Funds");
-                btnTransfer.setEnabled(false);
-                System.out.println("insufficient Funds");
-            }
-            }
-           catch(Exception ex){
-               
-           }
-        }
-    
-    
+//    private void computeSenderTransfer(){
+//          String receiverNumber = txtReceiverPhone.getText();
+//            try{
+//            String senderNumber = txtSenderPhone.getText();
+//             //System.out.println("Sender "+senderNumber);
+//           String balance = returnBalanceBasePhone(senderNumber);
+//           // System.out.println("Sender Balance "+balance );
+//            
+//            double amtTransfer = Double.parseDouble(txtAmountTransfer.getText());    // amt transfer
+//            System.out.println("Amount Transfer "+txtAmountTransfer.getText());
+//            
+//       //     double balanceAfterTransfer = returnPreAmountBaseBalance(Double.parseDouble(balance));
+//          //  System.out.println("Balance After Transfer" +balanceAfterTransfer);   //balance after transfer
+//            double preAmountAfterTransfer = returnPreAmountBaseBalanceAfterTransaction(balanceAfterTransfer,amtTransfer) ;
+//          //  System.out.println("PreaAmount After Transfefr "+preAmountAfterTransfer);
+//            txtRemainBalance.setText(Double.toString(balanceAfterTransfer));
+//            
+//            if (preAmountAfterTransfer != 0 && balance != null) {
+//                System.out.println("########################################\n\n");
+//               // System.out.println("Pre Amount "+preAmountAfterTransfer);              //save this to preamount
+//              //  System.out.println("Transfer "+txtAmountTransfer.getText());
+//              //  System.out.println("balance After transfer "+balanceAfterTransfer);
+//              
+//              
+//              
+//                // updateSenderAmountDetails(senderNumber, Double.toString(preAmountAfterTransfer),Double.toString(amtTransfer),  Double.toString(balanceAfterTransfer));
+//           
+//                 
+//                 returnReceiverAmountDetailsBasedOnPhone(receiverNumber);
+//                 
+//                 
+//                 
+//                 
+//            }
+//            else{
+//                ///save the data
+//                
+//                
+//                txtRemainBalance.setText("Insufficient Funds");
+//                btnTransfer.setEnabled(false);
+//                System.out.println("insufficient Funds");
+//            }
+//            }
+//           catch(Exception ex){
+//               
+//           }
+//        }
+//    
+//    
     
     
     
