@@ -49,6 +49,8 @@ public class DepositCash extends JFrame implements ActionListener{
     
     private String amtDeposited;
     private String customerBalance;
+    private String pin;
+    private String pNumber;
     public DepositCash() throws HeadlessException {
         databaseConnection.open();
         displayGUI();
@@ -104,6 +106,7 @@ public class DepositCash extends JFrame implements ActionListener{
         lblPhoneNumber.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         
         txtPhoneNumber = new JTextField();
+        txtPhoneNumber.setText("08110993832");
          txtPhoneNumber.addKeyListener(new KeyAdapter () {
                                 @Override
 				public void keyTyped (KeyEvent ke) {
@@ -198,6 +201,15 @@ public class DepositCash extends JFrame implements ActionListener{
         
     }
     
+    private void clearText(){
+         txtFullName.setText("");
+         txtAmountDeposited.setText("");
+         txtPreviousAmount.setText("");
+         txtPhoneNumber.setText("");
+         txtBalance.setText("");
+    }
+     
+    
     
     private String fetchDataBaseOnPhoneNumber(String number){
         String result = null;
@@ -219,11 +231,14 @@ public class DepositCash extends JFrame implements ActionListener{
                     clearText();
 
                 } else {
+                    pNumber = resultSet.getString("pnumber").trim();
+                    pin = resultSet.getString("pin").trim();
                     String fname = resultSet.getString("fname").trim();
                     String lname = resultSet.getString("lname").trim();
 
                     result = lname + " " + fname;
-
+                       // System.out.println("Number "+pNumber);
+                       // System.out.println("Pin "+pin);
                 }
 
             }
@@ -236,26 +251,12 @@ public class DepositCash extends JFrame implements ActionListener{
     }
     
      
-     private void clearText(){
-         txtFullName.setText("");
-         txtAmountDeposited.setText("");
-         txtPreviousAmount.setText("");
-         txtPhoneNumber.setText("");
-         txtBalance.setText("");
-    }
      
-     private String returnUserAmountBasedOnPhone(String pNumber){
+     public String returnUserAmountBasedOnPhone(String pNumber){
          String result;
          String previousAmount = txtPreviousAmount.getText();
          try{
-//             "Select * from generatorNepa where site like '"
-//                     + d
-//                     + "' AND nepaonofdate between '"
-//                     + startDate
-//                     + "' AND '"
-//                     + stopDate
-//                     + "' order by nepaonofdate  "
-//             
+ 
              
                // String query = "SELECT * FROM amountdeposited where pnumber like '" + pNumber + "'AND pin like '"+pin+"'";
                      String query = "SELECT * FROM amountdeposited where pnumber like '"+pNumber+"'";
@@ -264,52 +265,61 @@ public class DepositCash extends JFrame implements ActionListener{
                 resultSet = statement.executeQuery(query);
              
                 if (!resultSet.next()) {
-                    JOptionPane.showMessageDialog(null, "No Record found this user!!!");
+                    //JOptionPane.showMessageDialog(null, "No Record found this user!!!");
+                    System.out.println("No data for this user yet!!!!!!!!!!");
                     clearText();
 
                 } else {
                     String  preAmount;
                     preAmount = resultSet.getString("pamount").trim();
-                  //  System.out.println("Pre Amount "+preAmount);
+                   System.out.println("Pre Amount "+preAmount);
                     
                     
 //                  int  preAmountInt = Integer.parseInt(preAmount);
                   
                   
-                   String amtDeposited = resultSet.getString("adeposited").trim();
-                   String customerBalance = resultSet.getString("balance").trim();
+                  // String amtDeposited = resultSet.getString("adeposited").trim();
+                  // String customerBalance = resultSet.getString("balance").trim();
                     
-                   double preAmountDouble = Double.parseDouble(preAmount);
-                   double amtDepositedtDouble = Double.parseDouble(amtDeposited);
-                   double customerBalanceDouble = Double.parseDouble(customerBalance);
-                  if (!preAmount.equals("0") ) {
+//                   double preAmountDouble = Double.parseDouble(preAmount);
+//                   
+//                  if (!preAmount.equals("0") ) {
+//                      
+//                      double amtDepositedtDouble = Double.parseDouble(amtDeposited);
+//                   double customerBalanceDouble = Double.parseDouble(customerBalance);
+//                      
+                      
+                      
                     
                   
                    
-                   updateToDatabase(preAmountDouble, amtDepositedtDouble, customerBalanceDouble);
-                   clearText();
-
+//                  // updateToDatabase(preAmountDouble, amtDepositedtDouble, customerBalanceDouble);
+//                   clearText();
+//                
+//                }
+//                  else{
+//                      System.out.println("Save to database!!!!!");
+//                      //saveToDatabase();
+//                    // updateToDatabase(preAmountDouble, amtDepositedtDouble, customerBalanceDouble);
+//                     clearText();
+//   
+//                  }
+//                
+//                   
+//                
+//                }
+//              
                 }
-                  else{
-                     updateToDatabase(preAmountDouble, amtDepositedtDouble, customerBalanceDouble);
-                     clearText();
-   
-                  }
-                
-                   
-                
-                }
-              
-
-     }catch(Exception ex){
+     }
+                catch(Exception ex){
          ex.printStackTrace();
      }
          return preAmount;
      }
      
      private double balanceCompute(double previousAmount,double amountDeposited ){
-         double result = previousAmount + amountDeposited;
-         return result;
+         double myResult = previousAmount + amountDeposited;
+         return myResult;
      }
      
      private double returnBalanceFromDatabase(String pNumber ){
@@ -321,17 +331,17 @@ public class DepositCash extends JFrame implements ActionListener{
                 resultSet = statement.executeQuery(query);
 
                 if (!resultSet.next()) {
-                    JOptionPane.showMessageDialog(null, "No Record found this user!!!");
-                    clearText();
+                    System.out.println("SamSam");
+                  //  JOptionPane.showMessageDialog(null, "No Record found this user!!!");
+                  //  saveToDatabase();
+                    //clearText();
 
                 } else {
+                    
                    String balance = resultSet.getString("balance").trim();
                     
                    result = Double.parseDouble(balance);
-                   //System.out.println("Balnce "+balance);
-
-                    
-
+                   
                 }
               
 
@@ -345,26 +355,31 @@ public class DepositCash extends JFrame implements ActionListener{
          return result;
      }
      
-     private void saveToDatabase(){
+     private void saveToDatabase(String pAmount,String aDeposited,String custBalance){
             PreparedStatement ps;
          try {
-        String pAmount, aDeposited,custBalance;
+      
       pAmount = txtPreviousAmount.getText();
       aDeposited = txtAmountDeposited.getText();
       custBalance = txtBalance.getText();
-        
-        String sql = "INSERT INTO  amountdeposited(pamount,adeposited,balance)values(?,?,?)";
+             System.out.println("Pin!!!!"+pin);
+             System.out.println("Number "+pNumber);
+        String sql = "INSERT INTO  amountdeposited(pnumber,pin,pamount,adeposited,balance)values(?,?,?,?,?)";
         databaseConnection.open();
         
 	ps = databaseConnection.getConnection().prepareStatement(sql);
-        ps.setString(1, pAmount);
-	ps.setString(2, aDeposited);
-	ps.setString(3, custBalance);
+        ps.setString(1, pNumber);
+        ps.setString(2, pin);
+        ps.setString(3, pAmount);
+	ps.setString(4, aDeposited);
+	ps.setString(5, custBalance);
+       
 	
 			
 	ps.executeUpdate();
         
-    JOptionPane.showMessageDialog(null, "Account Created Successfully!!!!");
+    JOptionPane.showMessageDialog(null, "Account Updated Successfully!!!!");
+    clearText();
        
          } catch (Exception e) {
              //e.printStackTrace();
@@ -408,6 +423,7 @@ public class DepositCash extends JFrame implements ActionListener{
 	JOptionPane.showMessageDialog(null, "Account Updated Successfully!!!!");
         btnSave.setEnabled(false);
         txtAmountDeposited.setEditable(false);
+        clearText();
          }
          catch(Exception ex){
              ex.printStackTrace();
@@ -445,31 +461,36 @@ public class DepositCash extends JFrame implements ActionListener{
         }
         
         if (source.equals(btnSave)) {
-            
-           String balanceToDatabase;
-           String  pNumber = txtPhoneNumber.getText();
+            //saveToDatabase();
+          // String balanceToDatabase;
+           //  pNumber = txtPhoneNumber.getText();
            String amountDeposited = txtAmountDeposited.getText();
-           String pAmount = txtPreviousAmount.getText();
-           String custBalance = txtBalance.getText();
+          // String pAmount = txtPreviousAmount.getText();
+           //String custBalance = txtBalance.getText();
            String aDeposited = txtAmountDeposited.getText();
             try{
                 
              double returnBalance = returnBalanceFromDatabase(pNumber);
-                //System.out.println("returnbalance "+returnBalance);
+                System.out.println("returnbalance "+returnBalance);
             if ( returnBalance != 0) {
                 txtPreviousAmount.setText(Double.toString(returnBalance));
                 double balance = returnBalanceFromDatabase(pNumber);
                 double  totalBalance = balanceCompute(balance, Double.parseDouble(amountDeposited));
                 txtBalance.setText(Double.toString(totalBalance));
+                updateToDatabase(returnBalance, Double.parseDouble(aDeposited), totalBalance);
                 }
             else{
                 
               txtPreviousAmount.setText("0.00");
-              String previousAmount = txtPreviousAmount.getText();
-              double preAmountDouble = Double.parseDouble(previousAmount);
-              double  totalBalance = balanceCompute(preAmountDouble, Double.parseDouble(amountDeposited));
-              txtBalance.setText(Double.toString(totalBalance));
-                
+                System.out.println("Balance is zero");
+             
+                String previousAmount = txtPreviousAmount.getText();
+                double preAmountDouble = Double.parseDouble(previousAmount);
+                double totalBalance = balanceCompute(preAmountDouble, Double.parseDouble(amountDeposited));
+               txtBalance.setText(Double.toString(totalBalance));
+               
+                saveToDatabase(previousAmount, amountDeposited, Double.toString(totalBalance));
+//                
                 
             }
             returnUserAmountBasedOnPhone(pNumber);

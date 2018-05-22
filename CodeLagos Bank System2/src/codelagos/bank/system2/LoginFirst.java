@@ -45,6 +45,8 @@ class LoginFirst extends JFrame
         DatabaseConnection databaseConnection = new DatabaseConnection();
 	LoginFirst()
 	{
+            
+             
 		Toolkit kits=Toolkit.getDefaultToolkit();
 		screenSize=kits.getScreenSize();
 		width=screenSize.width/3;
@@ -55,11 +57,11 @@ class LoginFirst extends JFrame
 		//MainMenuFrame.setDefaultLookAndFeelDecorated(true);
 		
 		setTitle("Login");
-		Image img=Toolkit.getDefaultToolkit().getImage("images//mainicon.png");
-		setIconImage(img);
 		
 
 		c=getContentPane();
+                Image img=Toolkit.getDefaultToolkit().getImage("images//codelagos.jpg");
+		setIconImage(img);
 		tf.setBorder(BorderFactory.createBevelBorder(1, new Color(200, 200, 200), new Color(200, 200, 200)));
 		pf.setBorder(BorderFactory.createBevelBorder(1, new Color(200, 200, 200), new Color(200, 200, 200)));
 		tf.setMaximumSize(tf.getPreferredSize());
@@ -124,6 +126,7 @@ class LoginFirst extends JFrame
                                 bankSystem2.setResizable(false);
                                 bankSystem2.setSize(550, 430); 
                                 bankSystem2.setVisible(true);
+                        
 				 try
 				 {
 					DataInputStream sin=new DataInputStream(new FileInputStream("images//status.dat"));

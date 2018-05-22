@@ -347,6 +347,36 @@ public class OpenAccount extends JFrame implements ActionListener{
          txtPin.setText("");
      }
      
+      private boolean saveCopyToAmountDepositedTable(String number,String pin){
+         PreparedStatement ps;
+         boolean flag;
+         try {
+                     
+      String pAmount = "0.0",aDeposited = "0.0",balance = "0.0";
+      
+            
+        String sql = "INSERT INTO  amountdeposited(pnumber,pin,pamount,adeposited,balance)values(?,?,?,?,?)";
+        databaseConnection.open();
+        
+	ps = databaseConnection.getConnection().prepareStatement(sql);
+        ps.setString(1, number);
+	ps.setString(2, pin);
+	ps.setString(3, pAmount);
+	ps.setString(4, aDeposited);
+	ps.setString(5, balance);
+        
+        ps.executeUpdate();
+        flag = true;
+        
+         }
+      catch(Exception ex){
+          
+        flag = false;  
+        ex.printStackTrace();
+      }
+      return flag;
+      }
+     
      private void insertToDatabase(){
          PreparedStatement ps;
          try {
@@ -365,10 +395,15 @@ public class OpenAccount extends JFrame implements ActionListener{
 	ps.setString(4, aNumber);
 	ps.setString(5, aType);
         ps.setString(6, pin);
-			
-	ps.executeUpdate();
+			//save copy to amount deposited, number,pin,preAmount,adepost,balance
+                        boolean comfirm = saveCopyToAmountDepositedTable(number, pin);
+                        System.out.println("Comfirm "+comfirm);
+                        if (comfirm) {
+                 ps.executeUpdate();
         
-    JOptionPane.showMessageDialog(null, "Account Created Successfully!!!!");
+                JOptionPane.showMessageDialog(null, "Account Created Successfully!!!!");
+             }
+	
        
          } catch (Exception e) {
              //e.printStackTrace();

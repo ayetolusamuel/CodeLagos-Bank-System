@@ -300,7 +300,7 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
 
 
 		
-	ps.executeUpdate();
+	//ps.executeUpdate();
         
 	//JOptionPane.showMessageDialog(null, "Account Updated Successfully!!!!");
       
@@ -466,7 +466,10 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
         cash.setLocation(300,100);
         }
         if (source.equals(btnTransferFunds)) {
-            JOptionPane.showMessageDialog(null, "Loading..........\ncheck back");
+             TransferFunds  transferFunds = new TransferFunds();
+        transferFunds.setVisible(true);
+        transferFunds.setSize(530,330);
+        transferFunds.setLocation(300, 100);
         }
         if (source.equals(btnWithdrawCash)) {
         withdrawpopUp();
