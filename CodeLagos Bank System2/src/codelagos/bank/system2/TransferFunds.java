@@ -266,7 +266,7 @@ public class TransferFunds extends JFrame implements ActionListener{
     }
     
     private String returnSenderPin(String senderNumber){
-        System.out.println("Reciver Number "+senderNumber);
+      //  System.out.println("Reciver Number "+senderNumber);
         String pin = null;
         
         try {
@@ -290,7 +290,7 @@ public class TransferFunds extends JFrame implements ActionListener{
                     pin = resultSet.getString("pin").trim();
                    
                      
-                       System.out.println("Pin "+pin);
+                     //  System.out.println("Pin "+pin);
                 }
 
             }
@@ -303,7 +303,7 @@ public class TransferFunds extends JFrame implements ActionListener{
     }
     
   private String returnReceiverPin(String receiverNumber){
-        System.out.println("Reciver Number "+receiverNumber);
+       // System.out.println("Reciver Number "+receiverNumber);
         String pin = null;
         
         try {
@@ -328,7 +328,7 @@ public class TransferFunds extends JFrame implements ActionListener{
                     pin = resultSet.getString("pin").trim();
                    
                      
-                       System.out.println("Pin "+pin);
+                       //System.out.println("Pin "+pin);
                 }
 
             }
@@ -341,7 +341,19 @@ public class TransferFunds extends JFrame implements ActionListener{
     }
     
    
-  
+    
+    private double returnPreAmount(double amtTransfer, double balance){
+        double preAmount = 0;
+       
+        if (balance>amtTransfer) {
+             preAmount = balance -amtTransfer;
+             }
+        else{
+            System.out.println("Insufficient Account!!!");
+        }
+       
+        return preAmount;
+    }
   
   
   
@@ -354,41 +366,121 @@ public class TransferFunds extends JFrame implements ActionListener{
   
   private boolean senderAndReceiverVerification(String sender,String receiver){
       String senderPin,receiverPin;
+      double previousAmountAfterTransfer;
       boolean flag;
+      double amountToTransfer = Double.parseDouble(txtAmountTransfer.getText());
       senderPin = returnSenderPin(sender);
       receiverPin = returnReceiverPin(receiver);
       
       if (senderPin != null && receiverPin != null) {
+         
+          //then update the sender Amount.......
+          System.out.println("Before Transfer!!!!!!!!!!!!!!!!!!!!!!!!!");
+          double balanceSender = returnBalanceFromDatabaseBaseNumber(sender);
+          
+          //
+          double preAmountAfterTransfer = returnPreAmount(amountToTransfer, balanceSender);
+          
+          
+          System.out.println("Balance of sender before Transfer "+balanceSender);
+          
+          if (balanceSender != 0) {
+              System.out.println("Balance is not equal to Zeor" +balanceSender);
+              
+             // calculateBalance(sender, balanceSender)
+              
+            double amountAfterTransfer =   returnPreAmount(amountToTransfer, balanceSender);
+              if (balanceSender>amountToTransfer) {
+                    previousAmountAfterTransfer = 0.0;
+            
+              System.out.println("##############################################");
+              
+              System.out.println("Prev Amount After Transfer "+previousAmountAfterTransfer);
+            System.out.println("Amount Transfer "+amountToTransfer);
+              System.out.println("Amount After Transfer" +preAmountAfterTransfer);
+              txtRemainBalance.setText(Double.toString(preAmountAfterTransfer));
+              System.out.println("################################################");
+              JOptionPane.showMessageDialog(null, "Amount before transfer "+balanceSender);
+              
+                  updateSenderAmountDetails(sender, String.valueOf(previousAmountAfterTransfer), String.valueOf(amountToTransfer), String.valueOf(preAmountAfterTransfer));
+                  updateReceiverAmountDetails(receiver, String.valueOf(amountToTransfer));
+                  
+                  clearText();
+              }
+              else{
+                  System.out.println("You cant transfer all your funds");
+              }
+          
+              
+              
+          }
+          else{
+              System.out.println("Balance is zero");
+          }
+          
+          
+          
+         
+          //then update the receiver Account........
+          
+          
+          
+          
            System.out.println("Sender pin"+senderPin);
            System.out.println("Receiver Pin"+receiverPin);
            flag = true;
       }
       else{
-          System.out.println("deposit");
+          System.out.println("Create Account!!!");
            flag = false;
       }
-      
-     
-//      if (senderPin) {
-//          
-//      }
-      
       
       
       return flag;
   }
   
+  private void clearText(){
+      txtAmountTransfer.setText("");
+      txtRemainBalance.setText("");
+      btnTransfer.setEnabled(false);
+      
+  }
   
   
   
-  
-  
-  
-  
-  
+    private void updateSenderAmountDetails(String number, String preAmount, String amountTransfer, String balanceaferTransfer){
+        
+         try{
+             PreparedStatement ps;
+
+            System.out.println("ID Number" + number);
+             System.out.println("pre Amount " + preAmount);
+            System.out.println("AmountDeposited " + amountTransfer);
+            System.out.println("Balance " + balanceaferTransfer);
+
+             databaseConnection.open();
+
+             ps = databaseConnection.getConnection().prepareStatement("UPDATE amountdeposited SET pamount = ?, adeposited = ?, balance = ? WHERE pnumber = ?");
+
+             ps.setString(1, String.valueOf(preAmount));
+             ps.setString(2, String.valueOf(amountTransfer));
+             ps.setString(3, String.valueOf(balanceaferTransfer));
+             ps.setString(4, number);
+
+
+		
+	ps.executeUpdate();
+        
+	            JOptionPane.showMessageDialog(null, "Sender Account Updated Successfully!!!!\n Your New Balance is "+balanceaferTransfer);
+       
+         }
+         catch(Exception ex){
+             ex.printStackTrace();
+         }
+    }
     
     
-    private double returnBalanceFromDatabaseBaseNumber(String number){
+     private double returnBalanceFromDatabaseBaseNumber(String number){
         double balance = 0;
          try{
  
@@ -399,7 +491,7 @@ public class TransferFunds extends JFrame implements ActionListener{
              
                 if (!resultSet.next()) {
                      
-                   System.out.println("No data for this user yet!!!!!!!!!! <Receiver User");
+                   System.out.println("No data for this user yet!!!!!!!!!");
                 }
                 else{
                      balance = Double.parseDouble(resultSet.getString("balance").trim());
@@ -414,6 +506,110 @@ public class TransferFunds extends JFrame implements ActionListener{
     }
     
     
+    
+  
+  
+   private void updateReceiverAmountDetails(String number, String balanceaferTransfer){
+        double returnBalanceOfReceiver = returnBalanceFromDatabaseBaseNumber(number);
+        double balanceTotal = returnBalanceOfReceiver + Double.parseDouble(balanceaferTransfer);
+        if (returnBalanceOfReceiver != 0 && balanceaferTransfer !=null) {
+            try{
+             PreparedStatement ps;
+
+           // System.out.println("ID Number Receiver" + number);
+            // System.out.println("pre Amount " + preAmount);
+            //System.out.println("AmountDeposited " + amountTransfer);
+           // System.out.println("Receiver Balance " + balanceTotal);
+
+             databaseConnection.open();
+
+             ps = databaseConnection.getConnection().prepareStatement("UPDATE amountdeposited SET balance = ? WHERE pnumber = ?");
+
+             ps.setString(1, String.valueOf(balanceaferTransfer));
+            // ps.setString(2, String.valueOf(amountTransfer));
+            // ps.setString(3, String.valueOf(balanceaferTransfer));
+             ps.setString(2, number);
+
+
+		
+	ps.executeUpdate();
+        
+	            JOptionPane.showMessageDialog(null, "Receiver Account Also Updated Successfully!!!!\n Receiver New Balance is "+balanceTotal );
+        btnTransfer.setEnabled(false);
+        txtAmountTransfer.setEditable(false);
+       }
+              catch(Exception ex){
+             ex.printStackTrace();
+         }
+        }
+       // clearText();
+         }
+       
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   private String returnBalanceBasePhone(String pNumber){
+        
+        String balance = null;
+        
+          try{
+            //  System.out.println("P Number "+pNumber);
+ 
+                   String query = "SELECT * FROM amountdeposited where pnumber like '"+pNumber+"'";
+                   databaseConnection.open();
+                ResultSet resultSet;
+                Statement statement = databaseConnection.getStatement();
+                resultSet = statement.executeQuery(query);
+             
+                if (!resultSet.next()) {
+                    //JOptionPane.showMessageDialog(null, "No Record found this user!!!");
+                    System.out.println("No data for this user yet!!!!!!!!!!");
+                    //clearText();
+
+                } else {
+                   
+                    balance = resultSet.getString("balance").trim();
+                  
+                    
+                }
+          }catch(Exception ex){
+              
+          }
+        
+        return balance;
+    }
+    
+    
+  
+  
+  
+  
+  
+    
+    
+  
     
     private double calculateBalance(String number,double result){
         double preAmount = 0;
@@ -455,12 +651,7 @@ public class TransferFunds extends JFrame implements ActionListener{
     
     
     
-    
-    private double returnPreAmount(double amtTransfer, double balance){
-        double preAmount;
-        preAmount = balance -amtTransfer;
-        return preAmount;
-    }
+  
         
          private double returnPreAmountBaseBalanceAfterTransaction(double balance,double amtToTransfer){
         double preAmountresultAfterTransfer =0;
@@ -472,38 +663,7 @@ public class TransferFunds extends JFrame implements ActionListener{
         return preAmountresultAfterTransfer;
     }
     
-    private String returnBalanceBasePhone(String pNumber){
-        
-        String balance = null;
-        
-          try{
-              System.out.println("P Number "+pNumber);
- 
-                   String query = "SELECT * FROM amountdeposited where pnumber like '"+pNumber+"'";
-                   databaseConnection.open();
-                ResultSet resultSet;
-                Statement statement = databaseConnection.getStatement();
-                resultSet = statement.executeQuery(query);
-             
-                if (!resultSet.next()) {
-                    //JOptionPane.showMessageDialog(null, "No Record found this user!!!");
-                    System.out.println("No data for this user yet!!!!!!!!!!");
-                    //clearText();
-
-                } else {
-                   
-                    balance = resultSet.getString("balance").trim();
-                  
-                    
-                }
-          }catch(Exception ex){
-              
-          }
-        
-        return balance;
-    }
-    
-    
+   
     
     public String returnReceiverAmountDetailsBasedOnPhone(String pNumber){
           String  preAmount = null;
@@ -546,40 +706,7 @@ public class TransferFunds extends JFrame implements ActionListener{
     }
     
     
-    private void updateSenderAmountDetails(String number, String preAmount, String amountTransfer, String balanceaferTransfer){
-        
-         try{
-             PreparedStatement ps;
-
-            System.out.println("ID Number" + number);
-             System.out.println("pre Amount " + preAmount);
-            System.out.println("AmountDeposited " + amountTransfer);
-            System.out.println("Balance " + balanceaferTransfer);
-
-             databaseConnection.open();
-
-             ps = databaseConnection.getConnection().prepareStatement("UPDATE amountdeposited SET pamount = ?, adeposited = ?, balance = ? WHERE pnumber = ?");
-
-             ps.setString(1, String.valueOf(preAmount));
-             ps.setString(2, String.valueOf(amountTransfer));
-             ps.setString(3, String.valueOf(balanceaferTransfer));
-             ps.setString(4, number);
-
-
-		
-	//ps.executeUpdate();
-        
-	            JOptionPane.showMessageDialog(null, "Account Updated Successfully!!!!");
-        //btnSave.setEnabled(false);
-        //txtAmountDeposited.setEditable(false);
-       // clearText();
-         }
-         catch(Exception ex){
-             ex.printStackTrace();
-         }
-    }
-    
-    
+  
   
     
     private void saveToDatabase(String ReceiverNumber,String custBalance){
@@ -630,40 +757,7 @@ public class TransferFunds extends JFrame implements ActionListener{
     
     
     
-    private void updateReceiverAmountDetails(String number, String preAmount, String amountTransfer, String balanceaferTransfer){
-        
-         try{
-             PreparedStatement ps;
-
-            System.out.println("ID Number" + number);
-             System.out.println("pre Amount " + preAmount);
-            System.out.println("AmountDeposited " + amountTransfer);
-            System.out.println("Balance " + balanceaferTransfer);
-
-             databaseConnection.open();
-
-             ps = databaseConnection.getConnection().prepareStatement("UPDATE amountdeposited SET pamount = ?, adeposited = ?, balance = ? WHERE pnumber = ?");
-
-             ps.setString(1, String.valueOf(preAmount));
-             ps.setString(2, String.valueOf(amountTransfer));
-             ps.setString(3, String.valueOf(balanceaferTransfer));
-             ps.setString(4, number);
-
-
-		
-	//ps.executeUpdate();
-        
-	            JOptionPane.showMessageDialog(null, "Account Updated Successfully!!!!");
-        btnTransfer.setEnabled(false);
-        txtAmountTransfer.setEditable(false);
-       // clearText();
-         }
-         catch(Exception ex){
-             ex.printStackTrace();
-         }
-    }
-    
-    
+   
     
 //    private void computeSenderTransfer(){
 //          String receiverNumber = txtReceiverPhone.getText();

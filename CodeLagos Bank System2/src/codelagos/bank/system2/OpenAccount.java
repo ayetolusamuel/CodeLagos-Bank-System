@@ -287,10 +287,12 @@ public class OpenAccount extends JFrame implements ActionListener{
             resultSet = statement.executeQuery(query);
             
             if (!resultSet.next() ) {
-                JOptionPane.showMessageDialog(null, "No Record found in  the database!!!");
-          /// flag = false;
-          return;
-            } 
+                generateAccountNumber();
+                    insertToDatabase();
+                    clearText();
+         
+            } else{
+            
              // System.out.println("continue");
               String firstName,lastName,phoneNumber,accountType;
               firstName = txtFirstName.getText();
@@ -312,13 +314,7 @@ public class OpenAccount extends JFrame implements ActionListener{
                       JOptionPane.showMessageDialog(null, "User already exit in database");
                       clearText();
                     
-                }
-                else{
-                    
-                    generateAccountNumber();
-                    insertToDatabase();
-                    clearText();
-                }
+                }}
                
              
             }

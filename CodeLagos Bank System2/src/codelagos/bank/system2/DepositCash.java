@@ -364,25 +364,24 @@ public class DepositCash extends JFrame implements ActionListener{
       custBalance = txtBalance.getText();
              System.out.println("Pin!!!!"+pin);
              System.out.println("Number "+pNumber);
-        String sql = "INSERT INTO  amountdeposited(pnumber,pin,pamount,adeposited,balance)values(?,?,?,?,?)";
-        databaseConnection.open();
-        
-	ps = databaseConnection.getConnection().prepareStatement(sql);
-        ps.setString(1, pNumber);
-        ps.setString(2, pin);
-        ps.setString(3, pAmount);
-	ps.setString(4, aDeposited);
-	ps.setString(5, custBalance);
-       
-	
-			
+             
+             
+               ps = databaseConnection.getConnection().prepareStatement("UPDATE amountdeposited SET  pamount = ?, adeposited = ?,  balance = ? WHERE pnumber = ?");
+
+             ps.setString(1, String.valueOf(pAmount));
+             ps.setString(2, String.valueOf(aDeposited));
+             ps.setString(3, String.valueOf(custBalance));
+             ps.setString(4, pNumber);
+
+
+		
 	ps.executeUpdate();
-        
-    JOptionPane.showMessageDialog(null, "Account Updated Successfully!!!!");
+        JOptionPane.showMessageDialog(null, aDeposited + " Was Deposited To Your Account Successfully!!!!");
+
     clearText();
        
          } catch (Exception e) {
-             //e.printStackTrace();
+            // e.printStackTrace();
              System.err.println("Error in creating account!!!!!");
          }
          
