@@ -49,6 +49,7 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
     private JTextField txtPhoneNumber;
    private JPasswordField txtpin;
     private JTextField txtWithdraw;
+    private JButton btnLogout;
    
     public CodeLagosBankSystem2() {
         getGUI();
@@ -61,9 +62,8 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
 				public void windowClosing(WindowEvent e)
 				{       
 					
-		LoginFirst loginFirst =new LoginFirst();
-		loginFirst.setVisible(true);
-		loginFirst.setDefaultCloseOperation(3);
+		logout();
+                
 				
 				}
 			});
@@ -93,6 +93,7 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
 			}
           
         };
+        setTitle("CodeLagos Bank System Version 1.0");
         jPanel.setLayout(null);
        
           //System.out.print("1.\tOPEN ACCOUNT\n2.\tDEPOSIT CASH\n3.\tWITHDRAW CASH\n4.\tTRANSFER FUNDS\n5.\tCHECK BALANCE\n6.\tEXIT APPLICATION\n\n");
@@ -107,6 +108,14 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
         lblMenuList.setForeground(Color.PINK);
         lblMenuList.setFont(new Font("Times New Roman", Font.ITALIC, 40));
         jPanel.add(lblMenuList).setBounds(180,60,290,30);
+        
+        
+        btnLogout = new JButton(new ImageIcon("images/logout.png"));
+        btnLogout.setToolTipText("Click to Logout!!!");
+        btnLogout.setForeground(Color.red);
+        jPanel.add(btnLogout).setBounds(490,10,60,60);
+       btnLogout.addActionListener(this);
+        
         
         
        
@@ -129,7 +138,7 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
         btnWithdrawCash.addActionListener(this);
         
         btnTransferFunds = new JButton("Transfer Funds");
-        btnTransferFunds.setToolTipText("Transfer Funds to your Love one!!!!!!!!!");
+        btnTransferFunds.setToolTipText("Transfer Funds to your Love ones!!!!!!!!!");
         btnTransferFunds.setForeground(Color.red);
         jPanel.add(btnTransferFunds).setBounds(400,220,130,100);
         btnTransferFunds.addActionListener(this);
@@ -214,7 +223,7 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
 			
 		
              }else{
-                    System.out.println("Exit");
+                    //System.out.println("Exit");
                 }
              
     }
@@ -333,7 +342,7 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
            
           // System.out.println("Previous "+pre);
             
-            System.out.println("Amount withdraw is "+txtWithdraw.getText());
+           // System.out.println("Amount withdraw is "+txtWithdraw.getText());
             //show balance
             JOptionPane.showMessageDialog(null, (int)amountToWithdraw + " withdraw successfully from your account!!!!! "
                     + "\nYour New Balance is "+result);
@@ -429,7 +438,17 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
                 }
         return customerBalance;
     }
+
+
+
+
+    private void logout() {
+                setVisible(false);
+                LoginFirst loginFirst =new LoginFirst();
+		loginFirst.setVisible(true);
+		loginFirst.setDefaultCloseOperation(3);
     
+    }    
   
     
     ////////////////////////////////
@@ -466,6 +485,7 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
         cash.setLocation(300,100);
         }
         if (source.equals(btnTransferFunds)) {
+            setVisible(false);
              TransferFunds  transferFunds = new TransferFunds();
         transferFunds.setVisible(true);
         transferFunds.setSize(530,330);
@@ -474,7 +494,11 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
         if (source.equals(btnWithdrawCash)) {
         withdrawpopUp();
         }
+        if (source.equals(btnLogout)) {
+            logout();
         }
+        }
+
 
   
   

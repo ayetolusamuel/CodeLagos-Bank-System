@@ -57,6 +57,7 @@ public class OpenAccount extends JFrame implements ActionListener{
     private JButton btnSearch;
     private JPasswordField txtPin;
     DatabaseConnection databaseConnection = new DatabaseConnection();
+    private JButton btnCancel;
 
     public OpenAccount() throws HeadlessException {
         displayGUI();
@@ -70,11 +71,7 @@ public class OpenAccount extends JFrame implements ActionListener{
                                 @Override
 				public void windowClosing(WindowEvent e)
 				{       
-                                    CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
-                                    bankSystem2.setLocation(300, 100);
-                                    bankSystem2.setResizable(false);
-                                    bankSystem2.setSize(550, 430); 
-                                    bankSystem2.setVisible(true);
+                                    mainPage();
 				}
 			});
 		
@@ -221,16 +218,22 @@ public class OpenAccount extends JFrame implements ActionListener{
         jPanel.add(jcmbAccountType).setBounds(160,265,160,25);
        
         
-        btnSave = new JButton("Save to Database");
+        btnSave = new JButton("Save");
         btnSave.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         btnSave.setForeground(Color.MAGENTA);
-        jPanel.add(btnSave).setBounds(120,315,160,25);
+        jPanel.add(btnSave).setBounds(100,315,120,25);
         btnSave.addActionListener(this);
         
         btnClear = new JButton("Clear Fields");
         btnClear.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         btnClear.setForeground(Color.MAGENTA);
-        jPanel.add(btnClear).setBounds(290,315,160,25);
+        jPanel.add(btnClear).setBounds(250,315,120,25);
+        
+        btnCancel = new JButton("Cancel");
+        btnCancel.setFont(new Font("Times New Roman", Font.ITALIC, 15));
+        btnCancel.setForeground(Color.MAGENTA);
+        jPanel.add(btnCancel).setBounds(390,315,120,25);
+        btnCancel.addActionListener(this);
         
         
         databaseConnection.open();
@@ -287,9 +290,7 @@ public class OpenAccount extends JFrame implements ActionListener{
             resultSet = statement.executeQuery(query);
             
             if (!resultSet.next() ) {
-                generateAccountNumber();
-                    insertToDatabase();
-                    clearText();
+                System.out.println("No data");
          
             } else{
             
@@ -314,6 +315,11 @@ public class OpenAccount extends JFrame implements ActionListener{
                       JOptionPane.showMessageDialog(null, "User already exit in database");
                       clearText();
                     
+                }
+                else{
+                      generateAccountNumber();
+                    insertToDatabase();
+                    clearText();
                 }}
                
              
@@ -326,6 +332,16 @@ public class OpenAccount extends JFrame implements ActionListener{
        
        
     }
+    private void mainPage(){
+        setVisible(false);
+         CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
+         bankSystem2.setLocation(300, 100);
+        bankSystem2.setResizable(false);
+        bankSystem2.setSize(550, 430); 
+        bankSystem2.setVisible(true);
+    }
+    
+    
      private void saveToDatabaseVerification(){
          String number = txtPhoneNumber.getText();
          //verify if the user already exist in databse!!!!!!!!!!!
@@ -333,6 +349,12 @@ public class OpenAccount extends JFrame implements ActionListener{
              userInDatabase();
           
          }
+//         else{
+//             //save to database
+//               generateAccountNumber();
+//                    insertToDatabase();
+//                    clearText();
+//         }
         
      }
      private void clearText(){
@@ -486,6 +508,9 @@ public class OpenAccount extends JFrame implements ActionListener{
         if (source.equals(btnSearch)) {
             searchUser();
             
+        }
+        if (source.equals(btnCancel)) {
+            mainPage();
         }
     
     

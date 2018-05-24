@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -54,6 +55,7 @@ public class TransferFunds extends JFrame implements ActionListener{
     private DatabaseConnection databaseConnection = new DatabaseConnection();
     private JButton btnTransfer; 
     private JButton btnCheck;
+    private JLabel lblRemainBalanceResult;
 
     public TransferFunds() throws HeadlessException {
         displayGUI();
@@ -70,11 +72,11 @@ public class TransferFunds extends JFrame implements ActionListener{
                                 @Override
 				public void windowClosing(WindowEvent e)
 				{       
-//                                    CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
-//                                    bankSystem2.setLocation(300, 100);
-//                                    bankSystem2.setResizable(false);
-//                                    bankSystem2.setSize(550, 430); 
-//                                    bankSystem2.setVisible(true);
+                                    CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
+                                    bankSystem2.setLocation(300, 100);
+                                    bankSystem2.setResizable(false);
+                                    bankSystem2.setSize(550, 430); 
+                                    bankSystem2.setVisible(true);
 				}
 			});
 		
@@ -105,10 +107,11 @@ public class TransferFunds extends JFrame implements ActionListener{
         Image img=Toolkit.getDefaultToolkit().getImage("images//codelagos.jpg");
 		setIconImage(img);
         jPanel.setLayout(null);
+        setResizable(false);
        
-        
+        setTitle("Transfer Funds Portal!!!");
           //System.out.print("1.\tOPEN ACCOUNT\n2.\tDEPOSIT CASH\n3.\tWITHDRAW CASH\n4.\tTRANSFER FUNDS\n5.\tCHECK BALANCE\n6.\tEXIT APPLICATION\n\n");
-        JLabel lblWelcome = new JLabel("<html><b>Account Registration Portal");
+        JLabel lblWelcome = new JLabel("<html><b>Customer Transfer Funds Portal");
         lblWelcome.setForeground(Color.MAGENTA);
         lblWelcome.setFont(new Font("Times New Roman", Font.ITALIC, 18));
         jPanel.add(lblWelcome).setBounds(180,10,290,20);
@@ -122,14 +125,15 @@ public class TransferFunds extends JFrame implements ActionListener{
         jPanel.add(btnCheck).setBounds(480,70,30,30);
         btnCheck.addActionListener(this);
         
-        lblSenderPhone = new JLabel("Phone Number <Sender > ");
+        lblSenderPhone = new JLabel("<html><b>Phone Number{Sender}");
         lblSenderPhone.setForeground(Color.white);
-        lblSenderPhone.setFont(new Font("Times New Roman", Font.ITALIC, 12));
+        lblSenderPhone.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         jPanel.add(lblSenderPhone).setBounds(10,60,180,50);
         
         txtSenderPhone = new JTextField();
-        jPanel.add(txtSenderPhone).setBounds(160,75,300,20);
+        jPanel.add(txtSenderPhone).setBounds(180,75,200,25);
         txtSenderPhone.setText("08167137007");
+        txtSenderPhone.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         txtSenderPhone.addKeyListener(new KeyAdapter () {
                                 @Override
 				public void keyTyped (KeyEvent ke) {
@@ -142,16 +146,16 @@ public class TransferFunds extends JFrame implements ActionListener{
 		
         
         
-        lblReceiverPhone = new JLabel("Phone Number<Receiver> ");
-        lblReceiverPhone.setFont(new Font("Times New Roman", Font.ITALIC, 12));
+        lblReceiverPhone = new JLabel("<html><b>Phone Number{Receiver} ");
+        lblReceiverPhone.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         lblReceiverPhone.setForeground(Color.white);
-        jPanel.add(lblReceiverPhone).setBounds(10,100,160,40);
+        jPanel.add(lblReceiverPhone).setBounds(10,100,190,40);
         
         
         txtReceiverPhone = new JTextField();
         txtReceiverPhone.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         txtReceiverPhone.setForeground(Color.black);
-        txtReceiverPhone.setText("08110993832");
+        txtReceiverPhone.setText("07046246717");
         //txtReceiverPhone.setEditable(false);
           txtReceiverPhone.addKeyListener(new KeyAdapter () {
                                 @Override
@@ -163,7 +167,7 @@ public class TransferFunds extends JFrame implements ActionListener{
 								getToolkit().beep ();
 								ke.consume ();}}}});
 		
-        jPanel.add(txtReceiverPhone).setBounds(160,105,300,25);
+        jPanel.add(txtReceiverPhone).setBounds(180,108,200,25);
         
        
         
@@ -176,16 +180,25 @@ public class TransferFunds extends JFrame implements ActionListener{
         txtAmountTransfer = new JTextField();
         txtAmountTransfer.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         txtAmountTransfer.setForeground(Color.black);
-        jPanel.add(txtAmountTransfer).setBounds(160,145,300,25);
+        jPanel.add(txtAmountTransfer).setBounds(180,145,200,25);
        
         
         
         lblRemainBalance = new JLabel("<html><b>Remain Balance ");
         lblRemainBalance.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         lblRemainBalance.setForeground(Color.white);
-        jPanel.add(lblRemainBalance).setBounds(10,180,160,40);
+       // jPanel.add(lblRemainBalance).setBounds(10,180,160,40);
         
-        txtRemainBalance = new JTextField();
+      
+        lblRemainBalanceResult = new JLabel("<html><b>");
+         jPanel.add(lblRemainBalanceResult).setBounds(180,185,300,25);
+         lblRemainBalanceResult.setFont(new Font("Times New Roman", Font.ITALIC, 20));
+         lblRemainBalanceResult.setForeground(Color.white);
+       
+         
+         
+         
+         txtRemainBalance = new JTextField();
         txtRemainBalance.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         txtRemainBalance.setForeground(Color.black);
         txtRemainBalance.setEditable(false);
@@ -199,7 +212,7 @@ public class TransferFunds extends JFrame implements ActionListener{
 								getToolkit().beep ();
 								ke.consume ();}}}});
 			
-        jPanel.add(txtRemainBalance).setBounds(160,185,300,25);
+       // jPanel.add(txtRemainBalance).setBounds(160,185,300,25);
         
        btnTransfer = new JButton(new ImageIcon("images//transfer.jpg"));
        btnTransfer.setFont(new Font("Times New Roman", Font.ITALIC, 15));
@@ -231,6 +244,8 @@ public class TransferFunds extends JFrame implements ActionListener{
         txtAmountTransfer.setEnabled(true);
         txtRemainBalance.setEnabled(true);
         txtAmountTransfer.setEditable(true);
+        lblRemainBalance.setEnabled(true);
+        lblAmountTransfer.setEnabled(true);
     }
 
     
@@ -238,14 +253,18 @@ public class TransferFunds extends JFrame implements ActionListener{
         try{
         String receiverPin = returnReceiverPin(receiverNumber);
         String senderPin = returnSenderPin(senderNumber);
-      //  System.out.println("Sender Pin"+senderPin);
-       // System.out.println("Receiver Number "+receiverNumber);
+      
         if (senderNumber.length() !=11 || receiverNumber.length() != 11 ) {
-            System.out.println("Invalid phone Number");
+             Icon error=new ImageIcon("images//error.jpg");
+           JOptionPane.showMessageDialog(null, "<html><i>Invalid Phone Number!!!!\nCheck Sender/Receiver Phone Number..","ERROR",JOptionPane.PLAIN_MESSAGE,error);
+         
+          
             setInvisible();
         }
         else if (senderNumber.equals(receiverNumber)){
-            System.out.println("Sender number cant be same as Receiver Number");
+               Icon error=new ImageIcon("images//error.jpg");
+            JOptionPane.showMessageDialog(null, "<html><i>Sender number cant be same as Receiver Number","ERROR",JOptionPane.PLAIN_MESSAGE,error);
+         
             setInvisible();
         }
         else{
@@ -261,7 +280,10 @@ public class TransferFunds extends JFrame implements ActionListener{
         }
         
     }catch(Exception ex){
-            System.out.println("System Error!!!");
+          Icon error=new ImageIcon("images//error.jpg");
+            JOptionPane.showMessageDialog(null, "<html><i>System Error!!!","ERROR",JOptionPane.PLAIN_MESSAGE,error);
+         
+            //System.out.println("System Error!!!");
     }
     }
     
@@ -272,7 +294,7 @@ public class TransferFunds extends JFrame implements ActionListener{
         try {
           
             if (senderNumber.length() != 11) {
-                JOptionPane.showMessageDialog(null, "Invalid phone number number!!!!");
+               // JOptionPane.showMessageDialog(null, "Invalid phone number number!!!!");
                 //System.out.println("Invalid phone number number!!!!");
             } else {
 
@@ -283,8 +305,10 @@ public class TransferFunds extends JFrame implements ActionListener{
                 Statement statement = databaseConnection.getStatement();       resultSet = statement.executeQuery(query);
 
                 if (!resultSet.next()) {
-                    JOptionPane.showMessageDialog(null, "No Record found this user!!! "+senderNumber);
-                    //clearText();
+                      Icon error=new ImageIcon("images//error.jpg");
+                    JOptionPane.showMessageDialog(null, "<html><i>No Record found this user!!! "  +senderNumber,"ERROR",JOptionPane.PLAIN_MESSAGE,error);
+         
+                   
 
                 } else {
                     pin = resultSet.getString("pin").trim();
@@ -309,8 +333,9 @@ public class TransferFunds extends JFrame implements ActionListener{
         try {
           
             if (receiverNumber.length() != 11) {
-                JOptionPane.showMessageDialog(null, "Invalid phone number number!!!!");
-                //System.out.println("Invalid phone number number!!!!");
+                 Icon error=new ImageIcon("images//error.jpg");
+                    //JOptionPane.showMessageDialog(null, "<html><i>Invalid phone number number!!!!","ERROR",JOptionPane.PLAIN_MESSAGE,error);
+         
             } else {
 
                 String query = "SELECT * FROM accountopening where pnumber like '" + receiverNumber+ "'";
@@ -321,8 +346,9 @@ public class TransferFunds extends JFrame implements ActionListener{
                 resultSet = statement.executeQuery(query);
 
                 if (!resultSet.next()) {
-                    JOptionPane.showMessageDialog(null, "No Record found this user!!!"+receiverNumber);
-                    //clearText();
+                     Icon error=new ImageIcon("images//error.jpg");
+                    JOptionPane.showMessageDialog(null, "<html><i>No Record found this user!!!"  +receiverNumber,"ERROR",JOptionPane.PLAIN_MESSAGE,error);
+                    
 
                 } else {
                     pin = resultSet.getString("pin").trim();
@@ -349,7 +375,10 @@ public class TransferFunds extends JFrame implements ActionListener{
              preAmount = balance -amtTransfer;
              }
         else{
-            System.out.println("Insufficient Account!!!");
+            Icon error=new ImageIcon("images//error.jpg");
+                    JOptionPane.showMessageDialog(null, "<html><i>Insufficient Account!!!","ERROR",JOptionPane.PLAIN_MESSAGE,error);
+                    
+           // System.out.println("Insufficient Account!!!");
         }
        
         return preAmount;
@@ -375,32 +404,30 @@ public class TransferFunds extends JFrame implements ActionListener{
       if (senderPin != null && receiverPin != null) {
          
           //then update the sender Amount.......
-          System.out.println("Before Transfer!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //  System.out.println("Before Transfer!!!!!!!!!!!!!!!!!!!!!!!!!");
           double balanceSender = returnBalanceFromDatabaseBaseNumber(sender);
           
           //
           double preAmountAfterTransfer = returnPreAmount(amountToTransfer, balanceSender);
           
           
-          System.out.println("Balance of sender before Transfer "+balanceSender);
+        //  System.out.println("Balance of sender before Transfer "+balanceSender);
           
           if (balanceSender != 0) {
-              System.out.println("Balance is not equal to Zeor" +balanceSender);
-              
-             // calculateBalance(sender, balanceSender)
-              
-            double amountAfterTransfer =   returnPreAmount(amountToTransfer, balanceSender);
+             
               if (balanceSender>amountToTransfer) {
                     previousAmountAfterTransfer = 0.0;
             
-              System.out.println("##############################################");
+            
+                   // lblRemainBalanceResult.setText(Double.toString(preAmountAfterTransfer));
+           //   txtRemainBalance.setText(Double.toString(preAmountAfterTransfer));
+             
               
-              System.out.println("Prev Amount After Transfer "+previousAmountAfterTransfer);
-            System.out.println("Amount Transfer "+amountToTransfer);
-              System.out.println("Amount After Transfer" +preAmountAfterTransfer);
-              txtRemainBalance.setText(Double.toString(preAmountAfterTransfer));
-              System.out.println("################################################");
-              JOptionPane.showMessageDialog(null, "Amount before transfer "+balanceSender);
+               Icon info = new ImageIcon("images//info.jpg");
+            JOptionPane.showMessageDialog(null, "<html><i>Amount before transfer "+balanceSender,"MESSAGE",JOptionPane.PLAIN_MESSAGE,info);
+         
+              
+            //  JOptionPane.showMessageDialog(null, "Amount before transfer "+balanceSender);
               
                   updateSenderAmountDetails(sender, String.valueOf(previousAmountAfterTransfer), String.valueOf(amountToTransfer), String.valueOf(preAmountAfterTransfer));
                   updateReceiverAmountDetails(receiver, String.valueOf(amountToTransfer));
@@ -408,14 +435,18 @@ public class TransferFunds extends JFrame implements ActionListener{
                   clearText();
               }
               else{
-                  System.out.println("You cant transfer all your funds");
+                    Icon error=new ImageIcon("images//error.jpg");
+                    JOptionPane.showMessageDialog(null, "<html><i>You cant transfer all your funds!!!!","ERROR",JOptionPane.PLAIN_MESSAGE,error);
+                //  System.out.println("You cant transfer all your funds");
               }
           
               
               
           }
           else{
-              System.out.println("Balance is zero");
+                Icon error=new ImageIcon("images//error.jpg");
+                    JOptionPane.showMessageDialog(null, "<html><i>Balance is zero!!!!","ERROR",JOptionPane.PLAIN_MESSAGE,error);
+            //  System.out.println("Balance is zero");
           }
           
           
@@ -426,12 +457,14 @@ public class TransferFunds extends JFrame implements ActionListener{
           
           
           
-           System.out.println("Sender pin"+senderPin);
-           System.out.println("Receiver Pin"+receiverPin);
+          // System.out.println("Sender pin"+senderPin);
+         //  System.out.println("Receiver Pin"+receiverPin);
            flag = true;
       }
       else{
-          System.out.println("Create Account!!!");
+              Icon error=new ImageIcon("images//error.jpg");
+                    JOptionPane.showMessageDialog(null, "<html><i>Create Account!!!!","ERROR",JOptionPane.PLAIN_MESSAGE,error);
+         // System.out.println("Create Account!!!");
            flag = false;
       }
       
@@ -453,10 +486,10 @@ public class TransferFunds extends JFrame implements ActionListener{
          try{
              PreparedStatement ps;
 
-            System.out.println("ID Number" + number);
-             System.out.println("pre Amount " + preAmount);
-            System.out.println("AmountDeposited " + amountTransfer);
-            System.out.println("Balance " + balanceaferTransfer);
+//            System.out.println("ID Number" + number);
+//             System.out.println("pre Amount " + preAmount);
+//            System.out.println("AmountDeposited " + amountTransfer);
+//            System.out.println("Balance " + balanceaferTransfer);
 
              databaseConnection.open();
 
@@ -471,7 +504,7 @@ public class TransferFunds extends JFrame implements ActionListener{
 		
 	ps.executeUpdate();
         
-	            JOptionPane.showMessageDialog(null, "Sender Account Updated Successfully!!!!\n Your New Balance is "+balanceaferTransfer);
+	            JOptionPane.showMessageDialog(null, "<html><i><b>Sender Account Updated Successfully!!!! \n Your New Balance is "+balanceaferTransfer);
        
          }
          catch(Exception ex){
@@ -490,12 +523,14 @@ public class TransferFunds extends JFrame implements ActionListener{
                 resultSet = statement.executeQuery(query);
              
                 if (!resultSet.next()) {
-                     
-                   System.out.println("No data for this user yet!!!!!!!!!");
+                     Icon error = new ImageIcon("images//info.jpg");
+               JOptionPane.showMessageDialog(null, "<html><i>No data for this user yet!!!!!!!!!","MESSAGE",JOptionPane.PLAIN_MESSAGE,error);
+         
+                   //System.out.println("No data for this user yet!!!!!!!!!");
                 }
                 else{
                      balance = Double.parseDouble(resultSet.getString("balance").trim());
-                    System.out.println("Balance of the sender is "+balance);
+                   // System.out.println("Balance of the sender is "+balance);
                 }
          }
          catch(Exception ex){

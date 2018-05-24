@@ -203,10 +203,16 @@ class LoginFirst extends JFrame
 		cons.weighty=00;
 
 		cons.insets = new Insets(7, 25, 0, 5);
-
-		add(new JLabel("User Name "),cons,0,0,1,1);
-		cons.insets = new Insets(0, 25, 0, 0);
-		add(new JLabel("Password   "),cons,0,1,1,1);
+                JLabel lblUsername = new JLabel("<html><b>Username ");
+                lblUsername.setForeground(Color.white);
+                lblUsername.setFont(new Font("Times New Roman", Font.ITALIC, 18));
+		add(lblUsername,cons,0,0,1,1);
+		
+                cons.insets = new Insets(0, 25, 0, 0);
+                JLabel lblPassword = new JLabel("<html><b>Password");
+                lblPassword.setForeground(Color.white);
+                lblPassword.setFont(new Font("Times New Roman", Font.ITALIC, 18));
+                add(lblPassword,cons,0,1,1,1);
 		cons.fill=GridBagConstraints.BOTH;
 		cons.weightx=40;
 		cons.insets = new Insets(7, 0, 5, 13);
@@ -215,6 +221,9 @@ class LoginFirst extends JFrame
 		cons.insets = new Insets(0, 0, 5, 13);
 		add(pf,cons,1,1,2,1);
 		cons.insets = new Insets(10, 5, 0, 0);
+                ok.setForeground(Color.magenta);
+                exit.setForeground(Color.magenta);
+                clear.setForeground(Color.magenta);
 		add(ok,cons,0,2,1,1);
 		cons.insets = new Insets(10, 5, 0, 0);
 		add(clear,cons,1,2,1,1);
@@ -352,7 +361,7 @@ class LoginFirst extends JFrame
 	         while (current < target)
 	         {
                      
-	            sleep(10);
+	            sleep(5);
 	            current++;
 	         }
 	      }
