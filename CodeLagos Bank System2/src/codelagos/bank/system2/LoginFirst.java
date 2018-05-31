@@ -388,9 +388,8 @@ class LoginFirst extends JFrame
 			System.out.println("error in loading theme "+e.getMessage());
 		}
                 }
-		LoginFirst loginFirst =new LoginFirst();
-		loginFirst.setVisible(true);
-		loginFirst.setDefaultCloseOperation(3);
+		Events events = new Events();
+                events.loginWindowOpen();
 		}
 	
 }

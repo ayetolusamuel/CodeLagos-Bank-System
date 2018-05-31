@@ -228,6 +228,7 @@ public class OpenAccount extends JFrame implements ActionListener{
         btnClear.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         btnClear.setForeground(Color.MAGENTA);
         jPanel.add(btnClear).setBounds(250,315,120,25);
+        btnClear.addActionListener(this);
         
         btnCancel = new JButton("Cancel");
         btnCancel.setFont(new Font("Times New Roman", Font.ITALIC, 15));
@@ -332,7 +333,7 @@ public class OpenAccount extends JFrame implements ActionListener{
        
        
     }
-    private void mainPage(){
+    public void mainPage(){
         setVisible(false);
          CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
          bankSystem2.setLocation(300, 100);
@@ -512,6 +513,9 @@ public class OpenAccount extends JFrame implements ActionListener{
         if (source.equals(btnCancel)) {
             mainPage();
         }
+        if (source.equals(btnClear)) {
+            clearText();
+        }
     
     
     
@@ -522,7 +526,7 @@ public class OpenAccount extends JFrame implements ActionListener{
         OpenAccount openAccount = new OpenAccount();
             openAccount.setLocation(300, 100);
              openAccount.setResizable(false);
-              openAccount.  setSize(550, 430); 
+              openAccount.  setSize(550, 390); 
               openAccount.setVisible(true);
     }
 }

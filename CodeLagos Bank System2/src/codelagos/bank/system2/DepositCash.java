@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -52,6 +53,8 @@ public class DepositCash extends JFrame implements ActionListener{
     private String customerBalance;
     private String pin;
     private String pNumber;
+    private JButton btnCancel;
+    private JButton btnClear;
     public DepositCash() throws HeadlessException {
         databaseConnection.open();
         displayGUI();
@@ -107,7 +110,7 @@ public class DepositCash extends JFrame implements ActionListener{
         lblPhoneNumber.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         
         txtPhoneNumber = new JTextField();
-        txtPhoneNumber.setText("08110993832");
+      //  txtPhoneNumber.setText("08167137007");
          txtPhoneNumber.addKeyListener(new KeyAdapter () {
                                 @Override
 				public void keyTyped (KeyEvent ke) {
@@ -153,20 +156,44 @@ public class DepositCash extends JFrame implements ActionListener{
         
         txtAmountDeposited = new JTextField();
         jPanel.add(txtAmountDeposited).setBounds(150, 171, 250, 20);
+        txtAmountDeposited.addKeyListener(new KeyAdapter () {
+                                @Override
+				public void keyTyped (KeyEvent ke) {
+					char c = ke.getKeyChar ();
+					if (! ( (c == KeyEvent.VK_BACK_SPACE))) {
+						if (!(c == '0' || c == '1' || c == '2' || c == '3' || c == '4' ||
+					            c == '5' || c == '6' || c == '7' || c == '8' || c == '9')) {
+								getToolkit().beep ();
+								ke.consume ();}}}});
+        
+        
 
          lblBalance = new JLabel("Balance ");
-        jPanel.add(lblBalance).setBounds(15, 210, 100, 20);
+       // jPanel.add(lblBalance).setBounds(15, 210, 100, 20);
         lblBalance.setForeground(Color.white);
         lblBalance.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         
         txtBalance = new JTextField();
-        jPanel.add(txtBalance).setBounds(150, 211, 250, 20);
+       // jPanel.add(txtBalance).setBounds(150, 211, 250, 20);
         
-        btnSave = new JButton("<html><b>Save to Database");
+        btnSave = new JButton(new ImageIcon("images//save.png"));
         btnSave.setForeground(Color.MAGENTA);
         btnSave.setFont(new Font("Times New Roman", Font.ITALIC, 15));
-        jPanel.add(btnSave).setBounds(30,260,150,25);
+        jPanel.add(btnSave).setBounds(120,260,50,30);
         btnSave.addActionListener(this);
+        
+        btnClear = new JButton(new ImageIcon("images//clear.png"));
+        btnClear.setFont(new Font("Times New Roman", Font.ITALIC, 15));
+        btnClear.setForeground(Color.MAGENTA);
+        jPanel.add(btnClear).setBounds(190,260,60,30);
+        btnClear.addActionListener(this);
+
+        
+        btnCancel = new JButton(new ImageIcon("images//cancel.png"));
+        btnCancel.setFont(new Font("Times New Roman", Font.ITALIC, 15));
+        btnCancel.setForeground(Color.MAGENTA);
+        jPanel.add(btnCancel).setBounds(270,260,80,30);
+        btnCancel.addActionListener(this);
 
          setInvisible();
         
@@ -184,20 +211,24 @@ public class DepositCash extends JFrame implements ActionListener{
         lblBalance.setEnabled(false);
         txtBalance.setEditable(false);
         btnSave.setEnabled(false);
-        
+       // btnCancel.setEnabled(false);
+        btnClear.setEnabled(false);
         
     }
     
     private void setVisible(){
+        btnCancel.setEnabled(true);
         lblFullName.setEnabled(true);
         txtFullName.setEnabled(true);
         lblPreviousAmount.setEnabled(true);
         txtPreviousAmount.setEditable(false);
+        txtPreviousAmount.setEnabled(false);
         lblAmountDeposited.setEnabled(true);
         txtAmountDeposited.setEditable(true);
         lblBalance.setEnabled(true);
         txtBalance.setEditable(false);
         btnSave.setEnabled(true);
+        btnClear.setEnabled(true);
         
         
     }
@@ -213,7 +244,7 @@ public class DepositCash extends JFrame implements ActionListener{
     
     
     private String fetchDataBaseOnPhoneNumber(String number){
-        String result = null;
+        String fullNameResult = null;
         try {
           
             if (number.length() != 11) {
@@ -237,7 +268,7 @@ public class DepositCash extends JFrame implements ActionListener{
                     String fname = resultSet.getString("fname").trim();
                     String lname = resultSet.getString("lname").trim();
 
-                    result = lname + " " + fname;
+                    fullNameResult = lname + " " + fname;
                        // System.out.println("Number "+pNumber);
                        // System.out.println("Pin "+pin);
                 }
@@ -247,7 +278,7 @@ public class DepositCash extends JFrame implements ActionListener{
             Logger.getLogger(OpenAccount.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return result;
+        return fullNameResult;
 
     }
     
@@ -392,30 +423,34 @@ public class DepositCash extends JFrame implements ActionListener{
          
      }
     
-     
+     private void cleatText(){
+         txtAmountDeposited.setText("");
+         txtFullName.setText("");
+         txtPhoneNumber.setText("");
+         txtPreviousAmount.setText("");
+         
+         
+     }
      
      
      private static void openMainPage(){
        CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
          bankSystem2.setLocation(300, 100);
         bankSystem2.setResizable(false);
-        bankSystem2.setSize(550, 430); 
+        bankSystem2.setSize(550, 300); 
         bankSystem2.setVisible(true);
      }
     private void updateToDatabase(double pAmount,double pAmountDeposited,double balance){
         
          pAmount = Double.parseDouble(txtPreviousAmount.getText());
          pAmountDeposited = Double.parseDouble(txtAmountDeposited.getText());
-         balance = Double.parseDouble(txtBalance.getText());
-         String pNumber = txtPhoneNumber.getText();
+         balance = sumPreviousAndAmountDeposited(pAmount, pAmountDeposited);
+         
         
          try{
+             
              PreparedStatement ps;
 
-           //  System.out.println("ID Number" + pNumber);
-           //  System.out.println("pAmount " + pAmount);
-           //  System.out.println("AmountDeposited " + pAmountDeposited);
-            // System.out.println("Balance " + balance);
 
              databaseConnection.open();
 
@@ -429,16 +464,17 @@ public class DepositCash extends JFrame implements ActionListener{
 
 		
 	ps.executeUpdate();
-        
-	JOptionPane.showMessageDialog(null, "Account Updated Successfully!!!!");
-        btnSave.setEnabled(false);
-        txtAmountDeposited.setEditable(false);
+                         Icon info=new ImageIcon("images//info.jpg");
+                       JOptionPane.showMessageDialog(null, "<html><i>Account Updated Successfully!!!!\nNew Balance is  " +balance ,"Information",JOptionPane.PLAIN_MESSAGE,info);
+       
         clearText();
-        setVisible(false);
-        openMainPage();
+       btnCancel.setEnabled(true);
+       btnSave.setEnabled(false);
+       btnClear.setEnabled(false);
+       txtAmountDeposited.setEnabled(false);
          }
          catch(Exception ex){
-             ex.printStackTrace();
+            ex.printStackTrace();
          }
     }
      
@@ -448,7 +484,7 @@ public class DepositCash extends JFrame implements ActionListener{
     public static void main(String[] args) {
         DepositCash cash = new DepositCash();
         cash.setVisible(true);
-        cash.setSize(500,500);
+        cash.setSize(500,330);
         cash.setLocation(300,100);
     }
 
@@ -475,45 +511,48 @@ public class DepositCash extends JFrame implements ActionListener{
              
         }
         
+        if (source.equals(btnCancel)) {
+            setVisible(false);
+            OpenAccount account = new OpenAccount();
+            account.mainPage();
+            
+        }
+        if (source.equals(btnClear)) {
+            clearText();
+            setInvisible();
+       }
+        
         if (source.equals(btnSave)) {
-            //saveToDatabase();
-          // String balanceToDatabase;
-           //  pNumber = txtPhoneNumber.getText();
-           String amountDeposited = txtAmountDeposited.getText();
-          // String pAmount = txtPreviousAmount.getText();
-           //String custBalance = txtBalance.getText();
+         
+          
            String aDeposited = txtAmountDeposited.getText();
             try{
                 
              double returnBalance = returnBalanceFromDatabase(pNumber);
-               // System.out.println("returnbalance "+returnBalance);
+               
+                if (txtAmountDeposited.getText().matches("")) {
+                      Icon error=new ImageIcon("images//error.jpg");
+                       JOptionPane.showMessageDialog(null, "<html><i>Amount Deposited Can't Be Empty!!!!.","ERROR",JOptionPane.PLAIN_MESSAGE,error);
+         
+                 
+                }
+                else{
+               
             if ( returnBalance != 0) {
                 txtPreviousAmount.setText(Double.toString(returnBalance));
-                double balance = returnBalanceFromDatabase(pNumber);
-                double  totalBalance = balanceCompute(balance, Double.parseDouble(amountDeposited));
-                txtBalance.setText(Double.toString(totalBalance));
-                updateToDatabase(returnBalance, Double.parseDouble(aDeposited), totalBalance);
+              
+               double total = sumPreviousAndAmountDeposited(returnBalance,Double.parseDouble(aDeposited));
+                updateToDatabase(returnBalance, Double.parseDouble(aDeposited), total);
                 }
             else{
-                System.out.println("User did not exist in database!!!!");
+                       Icon error=new ImageIcon("images//error.jpg");
+                       JOptionPane.showMessageDialog(null, "<html><i>User did not exist in database!!!!!!!.","ERROR",JOptionPane.PLAIN_MESSAGE,error);
+         
             }
-//            else{
-//                
-//              txtPreviousAmount.setText("0.00");
-//                System.out.println("Balance is zero");
-//             
-//                String previousAmount = txtPreviousAmount.getText();
-//                double preAmountDouble = Double.parseDouble(previousAmount);
-//                double totalBalance = balanceCompute(preAmountDouble, Double.parseDouble(amountDeposited));
-//               txtBalance.setText(Double.toString(totalBalance));
-//               
-//                saveToDatabase(previousAmount, amountDeposited, Double.toString(totalBalance));
-////                
-//                
-//            }
+//           
             returnUserAmountBasedOnPhone(pNumber);
             
-               
+                }
         }catch(Exception ex){
            // ex.printStackTrace();
         }
@@ -522,4 +561,10 @@ public class DepositCash extends JFrame implements ActionListener{
     
     
     
-    }}
+    }
+
+    private double sumPreviousAndAmountDeposited(double returnBalance, double parseDouble) {
+       double total = returnBalance+parseDouble;
+        return total;
+    }
+}

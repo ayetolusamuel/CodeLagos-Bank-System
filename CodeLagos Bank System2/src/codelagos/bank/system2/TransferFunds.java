@@ -56,6 +56,8 @@ public class TransferFunds extends JFrame implements ActionListener{
     private JButton btnTransfer; 
     private JButton btnCheck;
     private JLabel lblRemainBalanceResult;
+    private JButton btnCancel;
+    private JButton btnClear;
 
     public TransferFunds() throws HeadlessException {
         displayGUI();
@@ -132,7 +134,7 @@ public class TransferFunds extends JFrame implements ActionListener{
         
         txtSenderPhone = new JTextField();
         jPanel.add(txtSenderPhone).setBounds(180,75,200,25);
-        txtSenderPhone.setText("08167137007");
+       // txtSenderPhone.setText("08167137007");
         txtSenderPhone.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         txtSenderPhone.addKeyListener(new KeyAdapter () {
                                 @Override
@@ -155,7 +157,7 @@ public class TransferFunds extends JFrame implements ActionListener{
         txtReceiverPhone = new JTextField();
         txtReceiverPhone.setFont(new Font("Times New Roman", Font.ITALIC, 15));
         txtReceiverPhone.setForeground(Color.black);
-        txtReceiverPhone.setText("07046246717");
+        //txtReceiverPhone.setText("07046246717");
         //txtReceiverPhone.setEditable(false);
           txtReceiverPhone.addKeyListener(new KeyAdapter () {
                                 @Override
@@ -220,7 +222,19 @@ public class TransferFunds extends JFrame implements ActionListener{
        jPanel.add(btnTransfer).setBounds(120,250,120,30);
        btnTransfer.addActionListener(this);
         
-     
+       
+        btnClear = new JButton(new ImageIcon("images//clear.png"));
+        btnClear.setFont(new Font("Times New Roman", Font.ITALIC, 15));
+        btnClear.setForeground(Color.MAGENTA);
+        jPanel.add(btnClear).setBounds(260,250,60,30);
+        btnClear.addActionListener(this);
+       
+       
+      btnCancel = new JButton(new ImageIcon("images//cancel.png"));
+        btnCancel.setFont(new Font("Times New Roman", Font.ITALIC, 15));
+        btnCancel.setForeground(Color.MAGENTA);
+        jPanel.add(btnCancel).setBounds(340,250,80,30);
+        btnCancel.addActionListener(this);
         
        // databaseConnection.open();
         
@@ -237,6 +251,8 @@ public class TransferFunds extends JFrame implements ActionListener{
         txtRemainBalance.setEnabled(false);
         lblRemainBalance.setEnabled(false);
         txtAmountTransfer.setEditable(false);
+        btnClear.setEnabled(false);
+       // btnCancel.setEnabled(false);
     }
     
     private void setVisible(){
@@ -246,9 +262,12 @@ public class TransferFunds extends JFrame implements ActionListener{
         txtAmountTransfer.setEditable(true);
         lblRemainBalance.setEnabled(true);
         lblAmountTransfer.setEnabled(true);
+        btnCancel.setEnabled(true);
+        btnClear.setEnabled(true);
+        
     }
 
-    
+   
     private void verifyPhoneNumber(String senderNumber,String receiverNumber){
         try{
         String receiverPin = returnReceiverPin(receiverNumber);
@@ -394,11 +413,19 @@ public class TransferFunds extends JFrame implements ActionListener{
   //check whether sender and receiver Number exist in the database
   
   private boolean senderAndReceiverVerification(String sender,String receiver){
-      String senderPin,receiverPin;
+      
       double previousAmountAfterTransfer;
       boolean flag;
-      double amountToTransfer = Double.parseDouble(txtAmountTransfer.getText());
-      senderPin = returnSenderPin(sender);
+     double amountToTransfer = 0;
+      try{
+          amountToTransfer = Double.parseDouble(txtAmountTransfer.getText());
+     
+     }catch(Exception ex){
+         
+     }
+     
+      String senderPin,receiverPin;
+       senderPin = returnSenderPin(sender);
       receiverPin = returnReceiverPin(receiver);
       
       if (senderPin != null && receiverPin != null) {
@@ -473,8 +500,11 @@ public class TransferFunds extends JFrame implements ActionListener{
   }
   
   private void clearText(){
-      txtAmountTransfer.setText("");
-      txtRemainBalance.setText("");
+       txtAmountTransfer.setText("");
+        txtReceiverPhone.setText("");
+        txtSenderPhone.setText("");
+        btnCancel.setEnabled(false);
+        btnClear.setEnabled(false);
       btnTransfer.setEnabled(false);
       
   }
@@ -547,7 +577,7 @@ public class TransferFunds extends JFrame implements ActionListener{
    private void updateReceiverAmountDetails(String number, String balanceaferTransfer){
         double returnBalanceOfReceiver = returnBalanceFromDatabaseBaseNumber(number);
         double balanceTotal = returnBalanceOfReceiver + Double.parseDouble(balanceaferTransfer);
-        if (returnBalanceOfReceiver != 0 && balanceaferTransfer !=null) {
+        if ( balanceTotal != 0) {
             try{
              PreparedStatement ps;
 
@@ -858,6 +888,9 @@ public class TransferFunds extends JFrame implements ActionListener{
             verifyPhoneNumber(senderNumber, receiverNumber);
             
         }
+        if (source.equals(btnClear)) {
+            clearText();
+        }
         if (source.equals(btnTransfer)) {
            String senderNumber = txtSenderPhone.getText();
            String receiverNumber = txtReceiverPhone.getText();
@@ -876,12 +909,17 @@ public class TransferFunds extends JFrame implements ActionListener{
 //          }
 //           
        }
+        if (source.equals(btnCancel)) {
+            setVisible(false);
+            OpenAccount account = new OpenAccount();
+            account.mainPage();
+        }
     }
 
     public static void main(String[] args) {
         TransferFunds  transferFunds = new TransferFunds();
         transferFunds.setVisible(true);
-        transferFunds.setSize(530,330);
+        transferFunds.setSize(530,320);
         transferFunds.setLocation(300, 100);
     }
 }

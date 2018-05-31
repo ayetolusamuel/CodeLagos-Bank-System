@@ -479,9 +479,9 @@ public class CodeLagosBankSystem2 extends JFrame implements ActionListener{
         }
         if (source.equals(btnDepositCash)) {
             setVisible(false);
-            DepositCash cash = new DepositCash();
+        DepositCash cash = new DepositCash();
         cash.setVisible(true);
-        cash.setSize(500,500);
+        cash.setSize(500,350);
         cash.setLocation(300,100);
         }
         if (source.equals(btnTransferFunds)) {
