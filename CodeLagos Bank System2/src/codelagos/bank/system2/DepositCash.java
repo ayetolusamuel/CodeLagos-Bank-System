@@ -63,11 +63,11 @@ public class DepositCash extends JFrame implements ActionListener{
                                 @Override
 				public void windowClosing(WindowEvent e)
 				{       
-                                    CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
-                                    bankSystem2.setLocation(300, 100);
-                                    bankSystem2.setResizable(false);
-                                    bankSystem2.setSize(550, 430); 
-                                    bankSystem2.setVisible(true);
+//                                    CodeLagosBankSystem2 bankSystem2 = new CodeLagosBankSystem2();
+//                                    bankSystem2.setLocation(300, 100);
+//                                    bankSystem2.setResizable(false);
+//                                    bankSystem2.setSize(550, 430); 
+//                                    bankSystem2.setVisible(true);
 				}
 			});
 		
@@ -529,7 +529,7 @@ public class DepositCash extends JFrame implements ActionListener{
             try{
                 
              double returnBalance = returnBalanceFromDatabase(pNumber);
-               
+                System.out.println("return Balance "+returnBalance);
                 if (txtAmountDeposited.getText().matches("")) {
                       Icon error=new ImageIcon("images//error.jpg");
                        JOptionPane.showMessageDialog(null, "<html><i>Amount Deposited Can't Be Empty!!!!.","ERROR",JOptionPane.PLAIN_MESSAGE,error);
@@ -545,9 +545,15 @@ public class DepositCash extends JFrame implements ActionListener{
                 updateToDatabase(returnBalance, Double.parseDouble(aDeposited), total);
                 }
             else{
-                       Icon error=new ImageIcon("images//error.jpg");
-                       JOptionPane.showMessageDialog(null, "<html><i>User did not exist in database!!!!!!!.","ERROR",JOptionPane.PLAIN_MESSAGE,error);
-         
+                
+                //insert to database
+                
+                returnBalance = 0;
+                double amtDepositedDouble = Double.parseDouble(txtAmountDeposited.getText());
+                
+               
+                updateToDatabase(returnBalance, amtDepositedDouble, returnBalance);
+                    
             }
 //           
             returnUserAmountBasedOnPhone(pNumber);
